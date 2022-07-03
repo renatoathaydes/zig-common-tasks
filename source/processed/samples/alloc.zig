@@ -1,21 +1,25 @@
-// {{ define name "Allocators - how to get one" }}{{ define id "allocators" }}{{ eval name }}
+// {{ define name "Create allocators" }}{{ define id "allocators" }}{{ eval name }}
 const std = @import("std");
 
 // Sample starts here{{ slot contents }}\
-test "Get a test allocator" {
+test "Get the test allocator" {
     const alloc = std.testing.allocator;
-    var array = try alloc.alloc(u8, 10);
-    try std.testing.expectEqual(@as(usize, 10), array.len);
-    defer alloc.free(array);
+    _ = alloc; // use allocator
 }
 
-test "Get a fixed buffer allocator" {
+test "Create a general-purpose allocator" {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    // call deinit to free it if necessary
+    defer _ = gpa.deinit();
+    _ = gpa.allocator(); // use allocator
+}
+
+test "Create a fixed buffer allocator" {
     const alloc: std.mem.Allocator = init: {
         // use an array as the "heap"
         var buffer: [1024]u8 = undefined;
         var fba = std.heap.FixedBufferAllocator.init(&buffer);
         break :init fba.allocator();
     };
-    const ptr = alloc.alloc(i32, 2048);
-    try std.testing.expectError(error.OutOfMemory, ptr);
+    _ = alloc; // use allocator
 } // {{ end }}{{ eval contents }} Sample ends
