@@ -1,5 +1,5 @@
 body {
-  font-size: 18px;
+  font-size: 1.1em;
   font-family: Helvetica;
   background: #111111;
   color: #eeeeee;
@@ -27,6 +27,14 @@ main > h1, h2, h3, h4, h5 {
   color: #eeeeee;
 }
 
+hr {
+  border-color: #b27306;
+}
+
+section.toc {
+  line-height: 0.7em;
+}
+
 pre {
   padding: 0 0.4em 0 0.4em;
   overflow: scroll;
@@ -37,6 +45,8 @@ pre {
 pre > code {
   background: none;
   color: #dddddd;
+  font-size: 1.0em;
+  line-height: 1.3em;
 }
 
 code {

@@ -6,18 +6,19 @@ It is not a tutorial and should be used mostly as a reference.
 
 ## Reading the samples
 
-Notice that it's implicit in most code samples:
+Notice that it's implicit in many code samples:
 
 * `const std = @import("std");` at the top.
-* samples that include `try` statements run inside `pub fn main() !void`.
 * the `alloc` variable is of type `std.mem.Allocator`. See the [allocators](#allocators) sample for how to get one.
 
 **Click on the title of each sample to see its full source.**
 
 ## Index
 
+{{ component _toc.html }}
 {{ for sample (sortBy name) /processed/samples }}
 [{{ eval sample.name }}](#{{ eval sample.id }})
+{{ end }}
 {{ end }}
 
 ## Code samples
@@ -36,6 +37,7 @@ Notes:
 {{ end }}\
 </ul>
 {{ end }}\
+<hr>
 {{ end }}\
 
 
