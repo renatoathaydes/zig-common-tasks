@@ -14,6 +14,11 @@ test "Create a general-purpose allocator" {
     _ = gpa.allocator(); // use allocator
 }
 
+test "Get system-native page allocator" {
+    const alloc: std.mem.Allocator = std.heap.page_allocator;
+    _ = alloc; // use allocator
+}
+
 test "Create a fixed buffer allocator" {
     const alloc: std.mem.Allocator = init: {
         // use an array as the "heap"
