@@ -20,7 +20,7 @@ jobs:
       run: go install github.com/renatoathaydes/magnanimous@0.11.1
 
     - name: Build Website
-      run: magnanimous -style monokai
+      run: magnanimous -style monokai -globalctx=_gitlab_global_context
     
     - name: Deploy 🚀
       uses: JamesIves/github-pages-deploy-action@v4
