@@ -181,7 +181,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <a href="/zig-common-tasks/samples/list_dirs.zig">List directory contents</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">List contents of directory</span><span style="color:#e6db74">&#34;</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> children <span style="color:#f92672">=</span> std.fs.cwd().openDir(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">some-dir</span><span style="color:#e6db74">&#34;</span>, .{}) <span style="color:#66d9ef">catch</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> children <span style="color:#f92672">=</span> std.fs.cwd().openDir(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">source</span><span style="color:#e6db74">&#34;</span>, .{ .iterate <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span> }) <span style="color:#66d9ef">catch</span> {
 </span></span><span style="display:flex;"><span>        <span style="color:#75715e">// couldn&#39;t open dir
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span>;
 </span></span><span style="display:flex;"><span>    };
