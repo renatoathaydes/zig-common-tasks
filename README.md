@@ -18,7 +18,7 @@ To build the website:
 magnanimous -style monokai
 ```
 
-Get Magnanimous by downloading a binary from its [Releases Page](https://github.com/renatoathaydes/magnanimous/releases) or with `go get -u github.com/renatoathaydes/magnanimous` if you have Go installed.
+Get Magnanimous by downloading a binary from its [Releases Page](https://github.com/renatoathaydes/magnanimous/releases) or with `go install github.com/renatoathaydes/magnanimous@0.11.1` if you have Go installed.
 
 ## Contributing
 
