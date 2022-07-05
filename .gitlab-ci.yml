@@ -6,7 +6,7 @@ workflow:
 
 pages:
   script:
-    - go get -u github.com/renatoathaydes/magnanimous
+    - go install github.com/renatoathaydes/magnanimous@0.11.0
     - magnanimous -style monokai
   artifacts:
     paths:
