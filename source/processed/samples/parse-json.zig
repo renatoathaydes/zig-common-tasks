@@ -22,6 +22,7 @@ test "Parse JSON scalar (number, string...)" {
     try std.testing.expectEqualSlices(u8, "hello JSON", string);
 }
 
+/// Example struct to be parsed from JSON object.
 const MyObject = struct {
     myField: u32,
 };
