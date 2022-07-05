@@ -28,6 +28,7 @@ Guidelines:
 
 * samples should not be too trivial, but also not complex.
 * must only use Zig's standard library.
+* must be cross-platform (runs at least on Mac, Windows and Linux).
 * preferrably, use tests... `main` also ok if side effects are unavoidable.
 
 All samples are [unlicensed](https://unlicense.org/) and belong to the public domain!
