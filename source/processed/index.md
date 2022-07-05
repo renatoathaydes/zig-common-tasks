@@ -24,7 +24,7 @@ Notice that it's implicit in many code samples:
 ## Code samples
 
 {{ for sample (sortBy name) /processed/samples }}
-<span id='{{ eval sample.id }}'>[{{ eval sample.name }}]({{ eval baseURL }}/{{ eval sample }})</span>
+    <span id='{{ eval sample.id }}'>[{{ eval sample.name }}]({{ eval baseURL }}{{ eval sample }})</span>
 {{ define _forceMarkdown 1 }}\
 ```zig
 {{ eval sample.contents }}
