@@ -7,7 +7,7 @@ workflow:
 pages:
   script:
     - go install github.com/renatoathaydes/magnanimous@0.11.1
-    - magnanimous -style monokai
+    - magnanimous -style monokai -globalctx=_gitlab_global_context
     - mv target public
   artifacts:
     paths:
