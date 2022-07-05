@@ -1,4 +1,8 @@
-image: golang 1.18.3
+image: golang:1.18
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH
 
 pages:
   script:
@@ -7,3 +11,5 @@ pages:
   artifacts:
     paths:
       - target
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
