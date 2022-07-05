@@ -1,1 +1,1 @@
-{{ define baseURL "zig-common-tasks" }}
+{{ define baseURL "/zig-common-tasks" }}
