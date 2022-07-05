@@ -1,0 +1,9 @@
+image: golang 1.18.3
+
+pages:
+  script:
+    - go get -u github.com/renatoathaydes/magnanimous
+    - magnanimous -style monokai
+  artifacts:
+    paths:
+      - target
