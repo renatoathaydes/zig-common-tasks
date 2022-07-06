@@ -16,6 +16,13 @@
 
 <p>It is not a tutorial and should be used mostly as a reference.</p>
 
+<h2>Known Hosts</h2>
+
+<ul>
+<li><a href="https://renatoathaydes.github.io/zig-common-tasks/">https://renatoathaydes.github.io/zig-common-tasks/</a></li>
+<li><a href="http://renatoathaydes.mypages.tech/zig-common-tasks/">http://renatoathaydes.mypages.tech/zig-common-tasks/</a></li>
+</ul>
+
 <h2>Reading the samples</h2>
 
 <p>Notice that it&rsquo;s implicit in many code samples:</p>
@@ -27,7 +34,14 @@
 This is hard to fix due to the bug being in an <a href="https://github.com/russross/blackfriday">unmaintained Go library</a> used to convert markdown to HTML. Once Zig has such library, maybe we&rsquo;ll switch to that and the problem will be gone :)!</li>
 </ul>
 
-<p><strong>Click on the title of each sample to see its full source.</strong></p>
+<blockquote>
+<p>All samples are tested on MacOS, Windows and Linux/Ubuntu using the Zig version declared in
+<a href="https://github.com/renatoathaydes/zig-common-tasks/blob/main/.github/workflows/test.yml">.github/workflows/test.yml</a>.</p>
+</blockquote>
+
+<h2>Contributing</h2>
+
+<p>Read instructions on this project repository&rsquo;s README on <a href="https://github.com/renatoathaydes/zig-common-tasks/">GitHub</a> or <a href="https://www.opencode.net/renatoathaydes/zig-common-tasks/">OpenCode</a>.</p>
 
 <h2>Index</h2>
 <section class="toc">
@@ -150,8 +164,8 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> builtin <span style="color:#f92672">=</span> @import(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">builtin</span><span style="color:#e6db74">&#34;</span>);
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> args <span style="color:#f92672">=</span>
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (builtin.os.tag <span style="color:#f92672">=</span><span style="color:#f92672">=</span> .windows <span style="color:#66d9ef">or</span> builtin.os.tag <span style="color:#f92672">=</span><span style="color:#f92672">=</span> .wasi)
-</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// must use allocator in windows and WASI
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">try</span> std.process.argsWithAllocator(alloc)
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// this sample does not work on Windows and WASI
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>
 </span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Linux, MacOS etc. can use the simpler args() method:
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        std.process.args();
