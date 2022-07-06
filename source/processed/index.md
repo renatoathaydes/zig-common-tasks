@@ -4,6 +4,11 @@ This website is dedicated to helping programmers perform common tasks in [Zig](h
 
 It is not a tutorial and should be used mostly as a reference.
 
+## Known Hosts
+
+* [https://renatoathaydes.github.io/zig-common-tasks/](https://renatoathaydes.github.io/zig-common-tasks/)
+* [http://renatoathaydes.mypages.tech/zig-common-tasks/](http://renatoathaydes.mypages.tech/zig-common-tasks/)
+
 ## Reading the samples
 
 Notice that it's implicit in many code samples:
@@ -13,7 +18,12 @@ Notice that it's implicit in many code samples:
 * Zig's multi-line strings are rendered incorrectly: `\\\ Foo` is shown as `\ Foo`, with a red slash.
   This is hard to fix due to the bug being in an [unmaintained Go library](https://github.com/russross/blackfriday) used to convert markdown to HTML. Once Zig has such library, maybe we'll switch to that and the problem will be gone :)!
 
-**Click on the title of each sample to see its full source.**
+> All samples are tested on MacOS, Windows and Linux/Ubuntu using the Zig version declared in
+> [.github/workflows/test.yml](https://github.com/renatoathaydes/zig-common-tasks/blob/main/.github/workflows/test.yml).
+
+## Contributing
+
+Read instructions on this project repository's README on [GitHub](https://github.com/renatoathaydes/zig-common-tasks/) or [OpenCode](https://www.opencode.net/renatoathaydes/zig-common-tasks/).
 
 ## Index
 
