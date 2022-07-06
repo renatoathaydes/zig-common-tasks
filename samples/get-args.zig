@@ -24,8 +24,9 @@ test "args - get an iterator, no allocation but not fully portable" {
     var args =
         if (builtin.os.tag == .windows or builtin.os.tag == .wasi)
         // must use allocator in windows and WASI
-        std.process.args().initWithAllocator(alloc)
+        try std.process.argsWithAllocator(alloc)
     else
+        // Linux, MacOS etc. can use the simpler args() method:
         std.process.args();
 
     while (args.next()) |arg| {

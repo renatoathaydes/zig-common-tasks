@@ -151,9 +151,10 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> args <span style="color:#f92672">=</span>
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (builtin.os.tag <span style="color:#f92672">=</span><span style="color:#f92672">=</span> .windows <span style="color:#66d9ef">or</span> builtin.os.tag <span style="color:#f92672">=</span><span style="color:#f92672">=</span> .wasi)
 </span></span><span style="display:flex;"><span>        <span style="color:#75715e">// must use allocator in windows and WASI
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        std.process.args().initWithAllocator(alloc)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">try</span> std.process.argsWithAllocator(alloc)
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>
-</span></span><span style="display:flex;"><span>        std.process.args();
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Linux, MacOS etc. can use the simpler args() method:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        std.process.args();
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> (args.next()) <span style="color:#f92672">|</span>arg<span style="color:#f92672">|</span> {
 </span></span><span style="display:flex;"><span>        _ <span style="color:#f92672">=</span> arg; <span style="color:#75715e">// use arg
