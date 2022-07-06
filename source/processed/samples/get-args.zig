@@ -24,8 +24,8 @@ test "args - get an iterator, no allocation but not fully portable" {
     const builtin = @import("builtin");
     var args =
         if (builtin.os.tag == .windows or builtin.os.tag == .wasi)
-        // must use allocator in windows and WASI
-        try std.process.argsWithAllocator(alloc)
+        // this sample does not work on Windows and WASI
+        return
     else
         // Linux, MacOS etc. can use the simpler args() method:
         std.process.args();
