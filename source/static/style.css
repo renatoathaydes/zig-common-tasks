@@ -35,6 +35,14 @@ section.toc {
   line-height: 0.7em;
 }
 
+.warning {
+  background: yellow;
+  color: red;
+  font-size: 0.8em;
+  font-style: italic;
+  padding: 0.5em;
+}
+
 pre {
   padding: 0 0.4em 0 0.4em;
   overflow: scroll;

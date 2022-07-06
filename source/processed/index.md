@@ -35,6 +35,8 @@ Read instructions on this project repository's README on [GitHub](https://github
 
 ## Code samples
 
+<div class='warning'>The Zig Standard Library is currently in flux. Effort is taken to keep all samples up-to-date, but changes are to be expected until it stabilizes after Zig 1.0.</div>
+
 {{ for sample (sortBy name) /processed/samples }}
 <span id='{{ eval sample.id }}'>
 <a href="{{ eval baseURL + sample }}">{{ eval sample.name }}</a>
