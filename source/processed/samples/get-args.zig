@@ -21,7 +21,14 @@ test "argsAlloc - get a slice, use an allocator" {
 }
 
 test "args - get an iterator, no allocation but not fully portable" {
-    var args = std.process.args();
+    const builtin = @import("builtin");
+    var args =
+        if (builtin.os.tag == .windows or builtin.os.tag == .wasi)
+        // must use allocator in windows and WASI
+        std.process.args().initWithAllocator(alloc)
+    else
+        std.process.args();
+
     while (args.next()) |arg| {
         _ = arg; // use arg
     }
