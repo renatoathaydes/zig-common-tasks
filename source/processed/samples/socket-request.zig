@@ -11,4 +11,4 @@ pub fn main() !void {
     var remote_stream = try std.net.tcpConnectToAddress(remote);
     defer remote_stream.close();
     try remote_stream.writer().writeAll("hello from Zig\n");
-} // {{ end }}{{ eval contents }} Sample ends {{ define notes ["See also [MasterQ32/zig-network](https://github.com/MasterQ32/zig-network)."]}}
+} // {{ end }}{{ eval contents }} Sample ends {{ define notes ["See also [MasterQ32/zig-network](https://github.com/MasterQ32/zig-network).", "This sample does not work on Windows. Help to fix it welcome."]}}
