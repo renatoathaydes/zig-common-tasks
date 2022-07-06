@@ -16,7 +16,7 @@ fn printMessage(reader: *std.net.Stream.Reader) !void {
 }
 
 // Sample starts herefn localhostListener(port: u16) !std.net.StreamServer {
-    const localhost = try std.net.Address.resolveIp("127.0.0.1", port);
+    const localhost = try std.net.Address.resolveIp("0.0.0.0", port);
     var listener = std.net.StreamServer.init(.{});
     try listener.listen(localhost);
     return listener;

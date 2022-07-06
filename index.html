@@ -310,7 +310,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <a href="/zig-common-tasks/samples/socket-accept.zig">Socket - accept TCP connections</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> localhostListener(port<span style="color:#f92672">:</span> <span style="color:#66d9ef">u16</span>) <span style="color:#f92672">!</span>std.net.StreamServer {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> localhost <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.net.Address.resolveIp(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">127.0.0.1</span><span style="color:#e6db74">&#34;</span>, port);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> localhost <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.net.Address.resolveIp(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">0.0.0.0</span><span style="color:#e6db74">&#34;</span>, port);
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> listener <span style="color:#f92672">=</span> std.net.StreamServer.init(.{});
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> listener.listen(localhost);
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> listener;
@@ -337,7 +337,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <a href="/zig-common-tasks/samples/socket-request.zig">Socket - send data</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> main() <span style="color:#f92672">!</span><span style="color:#66d9ef">void</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> remote <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.net.Address.resolveIp(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">127.0.0.1</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">8081</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> remote <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.net.Address.resolveIp(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">0.0.0.0</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">8081</span>);
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> remote_stream <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.net.tcpConnectToAddress(remote);
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> remote_stream.close();
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> remote_stream.writer().writeAll(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">hello from Zig</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
