@@ -10,7 +10,7 @@ pub fn main() !void {
     const maybe_input = try stdin.readUntilDelimiterOrEofAlloc(alloc, '\n', max_line_size);
     if (maybe_input) |input| {
         defer alloc.free(input);
-        _ = input; // use input
+        // use input
     }
 } // {{ end }}{{ eval contents }} Sample ends
 

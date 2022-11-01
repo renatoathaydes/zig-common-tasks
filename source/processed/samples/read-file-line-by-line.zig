@@ -12,9 +12,10 @@ test "Read file one line at a time" {
     };
     defer file.close();
     // wrapping the reader into a std.io.bufferedReader is usually advised
-    var reader = std.io.bufferedReader(file.reader()).reader();
+    var buffered_reader = std.io.bufferedReader(file.reader());
+    const reader = buffered_reader.reader();
     while (try reader.readUntilDelimiterOrEofAlloc(alloc, '\n', max_bytes_per_line)) |line| {
         defer alloc.free(line);
-        _ = line; // use line
+        // use line
     }
 } // {{ end }}{{ eval contents }} Sample ends
