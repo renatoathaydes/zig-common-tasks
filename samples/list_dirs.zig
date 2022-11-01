@@ -2,7 +2,7 @@
 const std = @import("std");
 
 // Sample starts heretest "List contents of directory" {
-    var children = std.fs.cwd().openDir("source", .{ .iterate = true }) catch {
+    var children = std.fs.cwd().openIterableDir("source", .{}) catch {
         // couldn't open dir
         return;
     };

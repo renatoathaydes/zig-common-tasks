@@ -9,7 +9,7 @@ const max_line_size = 1024;
     const maybe_input = try stdin.readUntilDelimiterOrEofAlloc(alloc, '\n', max_line_size);
     if (maybe_input) |input| {
         defer alloc.free(input);
-        _ = input; // use input
+        // use input
     }
 } //  Sample ends
 
