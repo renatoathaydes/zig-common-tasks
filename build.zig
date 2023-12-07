@@ -18,7 +18,9 @@ fn testAllSamples(b: *std.build.Builder, test_step: *std.build.Step) !void {
     var buffer: [1024]u8 = undefined;
     while (child) |c| : (child = try iterator.next()) {
         const path = try std.fmt.bufPrint(&buffer, "{s}{s}", .{ samples_dir, c.name });
-        const sample = b.addTest(path);
+        const sample = b.addTest(.{
+            .root_source_file = .{ .path = path },
+        }); 
         test_step.dependOn(&sample.step);
     }
 }
