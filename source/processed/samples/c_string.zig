@@ -14,8 +14,8 @@ const c = @cImport({
 // use mem.span to convert strings to slices
 const span = std.mem.span;
 
-test "my test" {
-    // cstr has type '[*c]const u8' here, but can be coerced to a Zig slice
+test "Handling C strings" {
+    // cstr has type '[*c]const u8' here, but can be coerced to a Zig pointer
     const cstr = c.give_str();
     // notice how Zig String literals are also 0-terminated
     const hz: [*:0]const u8 = "Hello Zig";
