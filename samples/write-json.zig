@@ -1,4 +1,4 @@
-// JSON - Parse object
+// JSON - Write object
 const std = @import("std");
 
 const alloc = std.testing.allocator;
