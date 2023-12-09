@@ -1,4 +1,4 @@
-// {{ define name "Parse JSON" }}{{ define id "parse-json" }}{{ eval name }}
+// {{ define name "JSON - Parse object" }}{{ define id "parse-json" }}{{ eval name }}
 const std = @import("std");
 
 const alloc = std.testing.allocator;
@@ -8,12 +8,12 @@ test "Parse JSON object" {
     const example_json: []const u8 =
         \\{"a_number": 10, "a_str": "hello"}
     ;
-    const json_structure = struct {
+    const JsonStruct = struct {
         a_number: u32,
         a_str: []const u8
     };
 
-    const parsed = try std.json.parseFromSlice(json_structure, alloc, example_json, .{});
+    const parsed = try std.json.parseFromSlice(JsonStruct, alloc, example_json, .{});
     defer parsed.deinit();
 
     const result = parsed.value;
