@@ -65,6 +65,8 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 
 <p><a href="#print-something">Print something to stdout/stderr</a></p>
 
+<p><a href="#exec-process">Process - execute</a></p>
+
 <p><a href="#read-file-bytes">Read file bytes</a></p>
 
 <p><a href="#read-file-line-by-line">Read file line by line</a></p>
@@ -348,6 +350,56 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> stdout.writer().print(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">number: {d}, string: {s}</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, .{ <span style="color:#ae81ff">42</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">fourty-two</span><span style="color:#e6db74">&#34;</span> });
 </span></span><span style="display:flex;"><span>} <span style="color:#75715e">// 
 </span></span></span></code></pre>
+<hr>
+
+<p><span id='exec-process'>
+<a href="/zig-common-tasks/samples/exec_process.zig">Process - execute</a>
+</span></p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Execute a process (inherit stdout and stderr)</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// the command to run
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> argv <span style="color:#f92672">=</span> [_][]<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">u8</span>{ <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">ls</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">./</span><span style="color:#e6db74">&#34;</span> };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// init a ChildProcess... cleanup is done by calling wait().
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> proc <span style="color:#f92672">=</span> std.ChildProcess.init(<span style="color:#f92672">&amp;</span>argv, alloc);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// ignore the streams to avoid the zig build blocking...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// REMOVE THESE IF YOU ACTUALLY WANT TO INHERIT THE STREAMS.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    proc.stdin_behavior <span style="color:#f92672">=</span> .Ignore;
+</span></span><span style="display:flex;"><span>    proc.stdout_behavior <span style="color:#f92672">=</span> .Ignore;
+</span></span><span style="display:flex;"><span>    proc.stderr_behavior <span style="color:#f92672">=</span> .Ignore;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> proc.spawn();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">//std.debug.print(&#34;Spawned process PID={}\n&#34;, .{proc.id});
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// the process only ends after this call returns.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> term <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> proc.wait();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// term can be .Exited, .Signal, .Stopped, .Unknown
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(term, std.ChildProcess.Term{ .Exited <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span> });
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Execute a process (consume stdout and stderr into allocated memory)</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// the command to run
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> argv <span style="color:#f92672">=</span> [_][]<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">u8</span>{ <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">ls</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">./</span><span style="color:#e6db74">&#34;</span> };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> proc <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.ChildProcess.exec(.{
+</span></span><span style="display:flex;"><span>        .allocator <span style="color:#f92672">=</span> alloc,
+</span></span><span style="display:flex;"><span>        .argv <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>argv,
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// on success, we own the output streams
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">defer</span> alloc.free(proc.stdout);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> alloc.free(proc.stderr);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> term <span style="color:#f92672">=</span> proc.term;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(term, std.ChildProcess.Term{ .Exited <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span> });
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expect(proc.stdout.len <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(proc.stderr.len, <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span></code></pre>
 <hr>
 
 <p><span id='read-file-bytes'>
