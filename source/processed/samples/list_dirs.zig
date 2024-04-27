@@ -3,7 +3,7 @@ const std = @import("std");
 
 // Sample starts here{{ slot contents }}\
 test "List contents of directory" {
-    var children = std.fs.cwd().openDir("source", .{}) catch {
+    var children = std.fs.cwd().openDir("source", .{ .iterate = true }) catch {
         // couldn't open dir
         return;
     };

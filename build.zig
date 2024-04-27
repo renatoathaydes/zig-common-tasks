@@ -11,7 +11,7 @@ pub fn build(b: *std.Build) void {
 const samples_dir = "source/processed/samples/";
 
 fn testAllSamples(b: *std.Build, test_step: *std.Build.Step) !void {
-    var samples = try std.fs.cwd().openDir(samples_dir, .{});
+    var samples = try std.fs.cwd().openDir(samples_dir, .{ .iterate = true });
     defer samples.close();
     var iterator = samples.iterate();
     var child = try iterator.next();
