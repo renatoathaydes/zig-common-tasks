@@ -1,6 +1,6 @@
 const std = @import("std");
 
-pub fn build(b: *std.build.Builder) void {
+pub fn build(b: *std.Build) void {
     const test_step = b.step("test", "Run all the samples");
 
     testAllSamples(b, test_step) catch |e| {
@@ -10,8 +10,8 @@ pub fn build(b: *std.build.Builder) void {
 
 const samples_dir = "source/processed/samples/";
 
-fn testAllSamples(b: *std.build.Builder, test_step: *std.build.Step) !void {
-    var samples = try std.fs.cwd().openIterableDir(samples_dir, .{});
+fn testAllSamples(b: *std.Build, test_step: *std.Build.Step) !void {
+    var samples = try std.fs.cwd().openDir(samples_dir, .{});
     defer samples.close();
     var iterator = samples.iterate();
     var child = try iterator.next();

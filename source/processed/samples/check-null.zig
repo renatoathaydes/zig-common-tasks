@@ -3,13 +3,13 @@ const std = @import("std");
 
 // Sample starts here{{ slot contents }}\
 test "Use value orelse a default" {
-    var byte: ?u8 = null;
-    var n: u8 = byte orelse @as(u8, 0);
+    const byte: ?u8 = null;
+    const n: u8 = byte orelse @as(u8, 0);
     try std.testing.expectEqual(n, @as(u8, 0));
 }
 
 test "Check for null using if statement" {
-    var byte: ?u8 = 10;
+    const byte: ?u8 = 10;
     var n: u8 = 2;
     if (byte) |b| {
         // b is non-null here
@@ -19,7 +19,7 @@ test "Check for null using if statement" {
 }
 
 test "Check for null using if expression" {
-    var byte: ?u8 = null;
-    var n: u8 = if (byte) |b| b + 1 else 2;
+    const byte: ?u8 = null;
+    const n: u8 = if (byte) |b| b + 1 else 2;
     try std.testing.expectEqual(n, @as(u8, 2));
 } // {{ end }}{{ eval contents }} Sample ends {{ define notes ["The [get-command-line-args](#get-command-line-args) sample shows a while loop used with an iterator which returns null when no more elements are left."] }}

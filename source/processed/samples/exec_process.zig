@@ -32,7 +32,7 @@ test "Execute a process (consume stdout and stderr into allocated memory)" {
     // the command to run
     const argv = [_][]const u8{ "ls", "./" };
 
-    var proc = try std.ChildProcess.exec(.{
+    const proc = try std.ChildProcess.run(.{
         .allocator = alloc,
         .argv = &argv,
     });
