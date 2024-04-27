@@ -12,7 +12,7 @@ const alloc = std.testing.allocator;
 }
 
 test "argsAlloc - get a slice, use an allocator" {
-    var args = try std.process.argsAlloc(alloc);
+    const args = try std.process.argsAlloc(alloc);
     defer std.process.argsFree(alloc, args);
     for (args) |arg| {
         _ = arg; // use arg

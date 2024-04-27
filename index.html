@@ -161,13 +161,13 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <a href="/zig-common-tasks/samples/check-null.zig">Check for null (using nullable value)</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Use value orelse a default</span><span style="color:#e6db74">&#34;</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> byte<span style="color:#f92672">:</span> <span style="color:#f92672">?</span><span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> n<span style="color:#f92672">:</span> <span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> byte <span style="color:#66d9ef">orelse</span> @as(<span style="color:#66d9ef">u8</span>, <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> byte<span style="color:#f92672">:</span> <span style="color:#f92672">?</span><span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> n<span style="color:#f92672">:</span> <span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> byte <span style="color:#66d9ef">orelse</span> @as(<span style="color:#66d9ef">u8</span>, <span style="color:#ae81ff">0</span>);
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(n, @as(<span style="color:#66d9ef">u8</span>, <span style="color:#ae81ff">0</span>));
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Check for null using if statement</span><span style="color:#e6db74">&#34;</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> byte<span style="color:#f92672">:</span> <span style="color:#f92672">?</span><span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> byte<span style="color:#f92672">:</span> <span style="color:#f92672">?</span><span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>;
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> n<span style="color:#f92672">:</span> <span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>;
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (byte) <span style="color:#f92672">|</span>b<span style="color:#f92672">|</span> {
 </span></span><span style="display:flex;"><span>        <span style="color:#75715e">// b is non-null here
@@ -177,8 +177,8 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Check for null using if expression</span><span style="color:#e6db74">&#34;</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> byte<span style="color:#f92672">:</span> <span style="color:#f92672">?</span><span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> n<span style="color:#f92672">:</span> <span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">if</span> (byte) <span style="color:#f92672">|</span>b<span style="color:#f92672">|</span> b <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">else</span> <span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> byte<span style="color:#f92672">:</span> <span style="color:#f92672">?</span><span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> n<span style="color:#f92672">:</span> <span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">if</span> (byte) <span style="color:#f92672">|</span>b<span style="color:#f92672">|</span> b <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">else</span> <span style="color:#ae81ff">2</span>;
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(n, @as(<span style="color:#66d9ef">u8</span>, <span style="color:#ae81ff">2</span>));
 </span></span><span style="display:flex;"><span>} <span style="color:#75715e">// 
 </span></span></span></code></pre>
@@ -232,7 +232,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">argsAlloc - get a slice, use an allocator</span><span style="color:#e6db74">&#34;</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> args <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.process.argsAlloc(alloc);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> args <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.process.argsAlloc(alloc);
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> std.process.argsFree(alloc, args);
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (args) <span style="color:#f92672">|</span>arg<span style="color:#f92672">|</span> {
 </span></span><span style="display:flex;"><span>        _ <span style="color:#f92672">=</span> arg; <span style="color:#75715e">// use arg
@@ -327,7 +327,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <a href="/zig-common-tasks/samples/list_dirs.zig">List directory contents</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">List contents of directory</span><span style="color:#e6db74">&#34;</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> children <span style="color:#f92672">=</span> std.fs.cwd().openIterableDir(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">source</span><span style="color:#e6db74">&#34;</span>, .{}) <span style="color:#66d9ef">catch</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> children <span style="color:#f92672">=</span> std.fs.cwd().openDir(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">source</span><span style="color:#e6db74">&#34;</span>, .{}) <span style="color:#66d9ef">catch</span> {
 </span></span><span style="display:flex;"><span>        <span style="color:#75715e">// couldn&#39;t open dir
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span>;
 </span></span><span style="display:flex;"><span>    };
@@ -383,7 +383,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// the command to run
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> argv <span style="color:#f92672">=</span> [_][]<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">u8</span>{ <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">ls</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">./</span><span style="color:#e6db74">&#34;</span> };
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> proc <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.ChildProcess.exec(.{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> proc <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.ChildProcess.run(.{
 </span></span><span style="display:flex;"><span>        .allocator <span style="color:#f92672">=</span> alloc,
 </span></span><span style="display:flex;"><span>        .argv <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>argv,
 </span></span><span style="display:flex;"><span>    });
@@ -469,11 +469,9 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <p><span id='socket-accept'>
 <a href="/zig-common-tasks/samples/socket-accept.zig">Socket - accept TCP connections</a>
 </span></p>
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> localhostListener(port<span style="color:#f92672">:</span> <span style="color:#66d9ef">u16</span>) <span style="color:#f92672">!</span>std.net.StreamServer {
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> localhostListener(port<span style="color:#f92672">:</span> <span style="color:#66d9ef">u16</span>) <span style="color:#f92672">!</span>std.net.Server {
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> localhost <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.net.Address.resolveIp(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">0.0.0.0</span><span style="color:#e6db74">&#34;</span>, port);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> listener <span style="color:#f92672">=</span> std.net.StreamServer.init(.{});
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> listener.listen(localhost);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> listener;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> localhost.listen(.{});
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> main() <span style="color:#f92672">!</span><span style="color:#66d9ef">void</span> {

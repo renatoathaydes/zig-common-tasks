@@ -1,8 +1,7 @@
 // Socket - accept TCP connections
 const std = @import("std");
 
-const alloc = std.testing.allocator;
-const max_msg_size = 1024;
+const alloc: std.mem.Allocator = std.heap.page_allocator;
 
 test "Verify that listener can be created" {
     // FIXME does not work on Windows
@@ -13,17 +12,15 @@ test "Verify that listener can be created" {
     defer listener.deinit();
 }
 
-fn printMessage(reader: *std.net.Stream.Reader) !void {
-    const msg = try reader.readAllAlloc(alloc, max_msg_size);
-    defer alloc.free(msg);
+fn printMessage(reader: anytype) !void {
+    var buf: [1024]u8 = undefined;
+    const msg = try reader.readUntilDelimiterOrEof(&buf, '\n') orelse "";
     std.debug.print("Got message: {s}", .{msg});
 }
 
-// Sample starts herefn localhostListener(port: u16) !std.net.StreamServer {
+// Sample starts herefn localhostListener(port: u16) !std.net.Server {
     const localhost = try std.net.Address.resolveIp("0.0.0.0", port);
-    var listener = std.net.StreamServer.init(.{});
-    try listener.listen(localhost);
-    return listener;
+    return localhost.listen(.{});
 }
 
 pub fn main() !void {
