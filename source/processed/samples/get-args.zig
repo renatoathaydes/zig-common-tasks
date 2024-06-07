@@ -3,7 +3,7 @@ const std = @import("std");
 
 const alloc = std.testing.allocator;
 
-// Sample starts here{{ slot contents }}\
+// Sample starts here{{ slot contents }}
 test "argsWithAllocator - get an iterator, use an allocator" {
     var args = try std.process.argsWithAllocator(alloc);
     defer args.deinit();
