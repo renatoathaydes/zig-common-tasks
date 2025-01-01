@@ -85,6 +85,8 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 
 <p><a href="#string-utf8">String - iterate over UTF-8 code points</a></p>
 
+<p><a href="#threads">Threads and channels</a></p>
+
 <p><a href="#write-file">Write to file</a></p>
 
 </section>
@@ -220,7 +222,14 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">break</span> <span style="color:#f92672">:</span>init fba.allocator();
 </span></span><span style="display:flex;"><span>    };
 </span></span><span style="display:flex;"><span>    _ <span style="color:#f92672">=</span> alloc; <span style="color:#75715e">// use allocator
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>} <span style="color:#75715e">// 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Get an Arena allocator</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> alloc <span style="color:#f92672">=</span> std.heap.ArenaAllocator.init(std.heap.page_allocator);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// the arena allocator will free everything allocated through it
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// when it is de-initialized.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">defer</span> alloc.deinit();
+</span></span><span style="display:flex;"><span>} <span style="color:#75715e">// 
 </span></span></span></code></pre>
 <hr>
 
@@ -569,6 +578,37 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(@as(<span style="color:#f92672">?</span>u21, <span style="color:#ae81ff">0x200D</span>), utf8_str.nextCodepoint());
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(@as(<span style="color:#f92672">?</span>u21, <span style="color:#ae81ff">0x1F680</span>), utf8_str.nextCodepoint());
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(@as(<span style="color:#f92672">?</span>u21, <span style="color:#66d9ef">null</span>), utf8_str.nextCodepoint());
+</span></span><span style="display:flex;"><span>} <span style="color:#75715e">// 
+</span></span></span></code></pre>
+<hr>
+
+<p><span id='threads'>
+<a href="/zig-common-tasks/samples/threads.zig">Threads and channels</a>
+</span></p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">const</span> Val <span style="color:#f92672">=</span> std.atomic.Value(<span style="color:#66d9ef">u32</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> Order <span style="color:#f92672">=</span> std.builtin.AtomicOrder;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> toRunInThread(v<span style="color:#f92672">:</span> <span style="color:#f92672">*</span>Val) <span style="color:#66d9ef">void</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> value <span style="color:#f92672">=</span> v.load(Order.acquire);
+</span></span><span style="display:flex;"><span>    v.store(value <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>, Order.release);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Pass an atomic value to a Thread and wait for it to be modified</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> allocator <span style="color:#f92672">=</span> std.heap.page_allocator;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// an atomic value to be updated by another Thread
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> value <span style="color:#f92672">=</span> Val.init(<span style="color:#ae81ff">42</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> thread <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.Thread.spawn(.{
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// optional config
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        .allocator <span style="color:#f92672">=</span> allocator,
+</span></span><span style="display:flex;"><span>        .stack_size <span style="color:#f92672">=</span> <span style="color:#ae81ff">1024</span>,
+</span></span><span style="display:flex;"><span>    }, toRunInThread, .{<span style="color:#f92672">&amp;</span>value});
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// must either join() or detach()
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    thread.join();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> expectEqual(@as(<span style="color:#66d9ef">u32</span>, <span style="color:#ae81ff">43</span>), value.load(Order.unordered));
 </span></span><span style="display:flex;"><span>} <span style="color:#75715e">// 
 </span></span></span></code></pre>
 <hr>
