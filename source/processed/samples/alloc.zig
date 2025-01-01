@@ -27,4 +27,11 @@ test "Create a fixed buffer allocator" {
         break :init fba.allocator();
     };
     _ = alloc; // use allocator
+}
+
+test "Get an Arena allocator" {
+    const alloc = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    // the arena allocator will free everything allocated through it
+    // when it is de-initialized.
+    defer alloc.deinit();
 } // {{ end }}{{ eval contents }} Sample ends
