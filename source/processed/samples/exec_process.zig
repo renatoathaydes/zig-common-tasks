@@ -9,7 +9,7 @@ test "Execute a process (inherit stdout and stderr)" {
     const argv = [_][]const u8{ "ls", "./" };
 
     // init a ChildProcess... cleanup is done by calling wait().
-    var proc = std.ChildProcess.init(&argv, alloc);
+    var proc = std.process.Child.init(&argv, alloc);
 
     // ignore the streams to avoid the zig build blocking...
     // REMOVE THESE IF YOU ACTUALLY WANT TO INHERIT THE STREAMS.
@@ -25,16 +25,16 @@ test "Execute a process (inherit stdout and stderr)" {
     const term = try proc.wait();
 
     // term can be .Exited, .Signal, .Stopped, .Unknown
-    try std.testing.expectEqual(term, std.ChildProcess.Term{ .Exited = 0 });
+    try std.testing.expectEqual(term, std.process.Child.Term{ .Exited = 0 });
 }
 
 test "Execute a process (consume stdout and stderr into allocated memory)" {
     // the command to run
     const argv = [_][]const u8{ "ls", "./" };
 
-    const proc = try std.ChildProcess.run(.{
-        .allocator = alloc,
+    const proc = try std.process.Child.run(.{
         .argv = &argv,
+        .allocator = alloc,
     });
 
     // on success, we own the output streams
@@ -43,7 +43,8 @@ test "Execute a process (consume stdout and stderr into allocated memory)" {
 
     const term = proc.term;
 
-    try std.testing.expectEqual(term, std.ChildProcess.Term{ .Exited = 0 });
+    try std.testing.expectEqual(std.process.Child.Term{ .Exited = 0 }, term);
     try std.testing.expect(proc.stdout.len != 0);
     try std.testing.expectEqual(proc.stderr.len, 0);
+
 }

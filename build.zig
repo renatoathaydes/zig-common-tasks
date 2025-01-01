@@ -19,7 +19,7 @@ fn testAllSamples(b: *std.Build, test_step: *std.Build.Step) !void {
     while (child) |c| : (child = try iterator.next()) {
         const path = try std.fmt.bufPrint(&buffer, "{s}{s}", .{ samples_dir, c.name });
         const sample = b.addTest(.{
-            .root_source_file = .{ .path = path },
+            .root_source_file = b.path(path),
         });
         const run_unit_test = b.addRunArtifact(sample);
         test_step.dependOn(&run_unit_test.step);
