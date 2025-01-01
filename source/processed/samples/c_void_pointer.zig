@@ -11,6 +11,8 @@ const c_code =
     \\const void* get_void() { return _value; }
 ;
 
+// WARNING: @cImport will eventually go away.
+//          https://github.com/ziglang/zig/issues/20630
 const c = @cImport({
     // normally you would include headers or even c files, like this:
     //@cInclude("test.c");
