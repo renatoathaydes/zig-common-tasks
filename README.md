@@ -41,6 +41,8 @@ mv target target-0.xx
 git reset --hard
 # move the temp versioned folder to its expected location
 mv target-0.xx target/0.xx
+# ensure that gitignore does not ignore the new directory
+gedit .gitignore
 # done, commit, tag and push everything
 git commit -am "..."
 git tag 0.xx

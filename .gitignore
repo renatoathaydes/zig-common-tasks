@@ -1,6 +1,6 @@
-target/
 zig-out/
 .zig-cache/
+target/*
 !target/0.12
 !target/0.13
 !target/0.14
