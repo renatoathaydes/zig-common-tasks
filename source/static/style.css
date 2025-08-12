@@ -6,6 +6,12 @@ body {
   margin: 0;
 }
 
+form#zig-version-form {
+  float: right;
+  border: solid 1px;
+  padding: 0.4em;
+}
+
 main {
   max-width: 60em;
   margin: auto;

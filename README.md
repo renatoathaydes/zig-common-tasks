@@ -20,6 +20,33 @@ magnanimous -style monokai
 
 Get Magnanimous by downloading a binary from its [Releases Page](https://github.com/renatoathaydes/magnanimous/releases) or with `go install github.com/renatoathaydes/magnanimous@0.11.1` if you have Go installed.
 
+### Committing a new version of the website
+
+To allow switching between Zig versions, each version of the website needs to be committed into source control.
+
+To do that, run the following commands, approximately:
+
+```shell
+# add the new version to the HTML
+gedit source/processed/fragments/_header.html
+# commit pending changes
+git commit -am "..."
+# this will delete all previous versions
+rm -rf target
+# build again
+magnanimous -style monokai
+# move the target folder to a temp versioned folder
+mv target target-0.xx
+# restore the previous versions
+git reset --hard
+# move the temp versioned folder to its expected location
+mv target-0.xx target/0.xx
+# done, commit, tag and push everything
+git commit -am "..."
+git tag 0.xx
+git push --all
+```
+
 ## Contributing
 
 Contributions are welcome!
