@@ -1,0 +1,616 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Zig Common Tasks</title>
+    <meta name="description" content="Zig Common Tasks (various code samples)">
+    <meta name="author" content="Renato Athaydes and contributors">
+    <link rel="stylesheet" href="/zig-common-tasks/style.css">
+</head>
+<body>
+<header>
+<img src="/zig-common-tasks/zig-logo.svg" style="width: 5em"/><h1>Zig Common Tasks</h1>
+</header>
+<main>
+<form id="zig-version-form">
+  <label for="zversion">Zig Version:</label>
+  <select id="zversion" name="zig-version">
+    <option value="0.12">0.12</option>
+    <option value="0.13">0.13</option>
+    <option value="0.14">0.14</option>
+  </select>
+</form>
+
+<p>This website is dedicated to helping programmers perform common tasks in <a href="https://ziglang.org/">Zig</a>.</p>
+
+<p>It is not a tutorial and should be used mostly as a reference.</p>
+
+<h2>Known Hosts</h2>
+
+<ul>
+<li><a href="https://renatoathaydes.github.io/zig-common-tasks/">https://renatoathaydes.github.io/zig-common-tasks/</a></li>
+<li><a href="http://renatoathaydes.mypages.tech/zig-common-tasks/">http://renatoathaydes.mypages.tech/zig-common-tasks/</a></li>
+</ul>
+
+<h2>Reading the samples</h2>
+
+<p>Notice that it&rsquo;s implicit in many code samples:</p>
+
+<ul>
+<li><code>const std = @import(&quot;std&quot;);</code> at the top.</li>
+<li>the <code>alloc</code> variable is of type <code>std.mem.Allocator</code>. See the <a href="#allocators">allocators</a> sample for how to get one.</li>
+<li>Zig&rsquo;s multi-line strings are rendered incorrectly: <code>\\ Foo</code> is shown as <code>\ Foo</code>, with a red slash.
+This is hard to fix due to the bug being in an <a href="https://github.com/russross/blackfriday">unmaintained Go library</a> used to convert markdown to HTML. Once Zig has such library, maybe we&rsquo;ll switch to that and the problem will be gone :)!</li>
+</ul>
+
+<blockquote>
+<p>All samples are tested on MacOS, Windows and Linux/Ubuntu using the Zig version declared in
+<a href="https://github.com/renatoathaydes/zig-common-tasks/blob/main/.github/workflows/test.yml">.github/workflows/test.yml</a>.</p>
+</blockquote>
+
+<h2>Contributing</h2>
+
+<p>Read instructions on this project repository&rsquo;s README on <a href="https://github.com/renatoathaydes/zig-common-tasks/">GitHub</a> or <a href="https://www.opencode.net/renatoathaydes/zig-common-tasks/">OpenCode</a>.</p>
+
+<h2>Index</h2>
+<section class="toc">
+<p><a href="#c-interop-strings">C interop - Strings</a></p>
+
+<p><a href="#c-interop-void-pointers">C interop - void pointers</a></p>
+
+<p><a href="#check-null">Check for null (using nullable value)</a></p>
+
+<p><a href="#allocators">Create allocators</a></p>
+
+<p><a href="#get-command-line-args">Get command line arguments</a></p>
+
+<p><a href="#get-env-vars">Get environment variables</a></p>
+
+<p><a href="#parse-json">JSON - Parse object</a></p>
+
+<p><a href="#write-json">JSON - Write object</a></p>
+
+<p><a href="#list-dirs">List directory contents</a></p>
+
+<p><a href="#print-something">Print something to stdout/stderr</a></p>
+
+<p><a href="#exec-process">Process - execute</a></p>
+
+<p><a href="#read-file-bytes">Read file bytes</a></p>
+
+<p><a href="#read-file-line-by-line">Read file line by line</a></p>
+
+<p><a href="#user-input">Read user input from command line</a></p>
+
+<p><a href="#socket-accept">Socket - accept TCP connections</a></p>
+
+<p><a href="#socket-request">Socket - send data</a></p>
+
+<p><a href="#string-contains">String - check if it contains another</a></p>
+
+<p><a href="#string-compare">String - compare two strings</a></p>
+
+<p><a href="#string-to-number">String - convert to number</a></p>
+
+<p><a href="#string-utf8">String - iterate over UTF-8 code points</a></p>
+
+<p><a href="#write-file">Write to file</a></p>
+
+</section>
+<h2>Code samples</h2>
+
+<div class='warning'>The Zig Standard Library is currently in flux. Effort is taken to keep all samples up-to-date, but changes are to be expected until it stabilizes after Zig 1.0.</div>
+
+<p><span id='c-interop-strings'>
+<a href="/zig-common-tasks/samples/c_string.zig">C interop - Strings</a>
+</span></p>
+<pre style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">const</span> c <span style="color:#f92672">=</span> @cImport({
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// normally you would include headers or even c files, like this:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">//@cInclude(&#34;test.c&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// but for this sample, C code is directly defined here
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    @cDefine(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">MY_C_CODE</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">()</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">const char* give_str() { return </span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">Hello C</span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">; }</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>});
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// use mem.span to convert strings to slices
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> span <span style="color:#f92672">=</span> std.mem.span;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Handling C strings</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// cstr has type &#39;[*c]const u8&#39; here, but can be coerced to a Zig pointer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> cstr <span style="color:#f92672">=</span> c.give_str();
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// notice how Zig String literals are also 0-terminated
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> hz<span style="color:#f92672">:</span> [<span style="color:#f92672">*</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>]<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Hello Zig</span><span style="color:#e6db74">&#34;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> hc<span style="color:#f92672">:</span> [<span style="color:#f92672">*</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>]<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Hello C</span><span style="color:#e6db74">&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// calling &#34;span&#34; turns sentinel-terminated values into slices
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> hzSlice<span style="color:#f92672">:</span> []<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> span(hz);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> expect(<span style="color:#f92672">!</span>std.mem.eql(<span style="color:#66d9ef">u8</span>, span(cstr), hzSlice));
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> expect(std.mem.eql(<span style="color:#66d9ef">u8</span>, span(cstr), span(hc)));
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span></code></pre>
+<hr>
+
+<p><span id='c-interop-void-pointers'>
+<a href="/zig-common-tasks/samples/c_void_pointer.zig">C interop - void pointers</a>
+</span></p>
+<pre style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">const</span> c_code <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#960050;background-color:#1e0010">\</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#960050;background-color:#1e0010">\</span>static <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> _value;
+</span></span><span style="display:flex;"><span>    <span style="color:#960050;background-color:#1e0010">\</span><span style="color:#66d9ef">void</span> store_void(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> v) { _value <span style="color:#f92672">=</span> v; }
+</span></span><span style="display:flex;"><span>    <span style="color:#960050;background-color:#1e0010">\</span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> get_void() { <span style="color:#66d9ef">return</span> _value; }
+</span></span><span style="display:flex;"><span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> c <span style="color:#f92672">=</span> @cImport({
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// normally you would include headers or even c files, like this:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">//@cInclude(&#34;test.c&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// but for this sample, C code is directly defined here
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    @cDefine(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">MY_C_CODE</span><span style="color:#e6db74">&#34;</span>, c_code);
+</span></span><span style="display:flex;"><span>});
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">deal with void pointer from C</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// send some value to be stored in C as a void* pointer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    c.store_void(@as(<span style="color:#f92672">?</span><span style="color:#f92672">*</span><span style="color:#66d9ef">const</span> anyopaque, <span style="color:#f92672">&amp;</span>@as(<span style="color:#66d9ef">u32</span>, <span style="color:#ae81ff">10</span>)));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// retrieve the value which now is &#34;untyped&#34;, or opaque
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> untyped_value<span style="color:#f92672">:</span> <span style="color:#f92672">?</span><span style="color:#f92672">*</span><span style="color:#66d9ef">const</span> anyopaque <span style="color:#f92672">=</span> c.get_void();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// to restore the type, we must cast it to the known type explicitly
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> value<span style="color:#f92672">:</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">u32</span> <span style="color:#f92672">=</span> @ptrCast(@alignCast( untyped_value));
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(@as(<span style="color:#66d9ef">u32</span>, <span style="color:#ae81ff">10</span>), value.<span style="color:#f92672">*</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span></code></pre>
+<hr>
+
+<p><span id='check-null'>
+<a href="/zig-common-tasks/samples/check-null.zig">Check for null (using nullable value)</a>
+</span></p>
+<pre style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Use value orelse a default</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> byte<span style="color:#f92672">:</span> <span style="color:#f92672">?</span><span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> n<span style="color:#f92672">:</span> <span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> byte <span style="color:#66d9ef">orelse</span> @as(<span style="color:#66d9ef">u8</span>, <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(n, @as(<span style="color:#66d9ef">u8</span>, <span style="color:#ae81ff">0</span>));
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Check for null using if statement</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> byte<span style="color:#f92672">:</span> <span style="color:#f92672">?</span><span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> n<span style="color:#f92672">:</span> <span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (byte) <span style="color:#f92672">|</span>b<span style="color:#f92672">|</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// b is non-null here
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        n <span style="color:#f92672">+</span><span style="color:#f92672">=</span> b;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(n, @as(<span style="color:#66d9ef">u8</span>, <span style="color:#ae81ff">12</span>));
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Check for null using if expression</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> byte<span style="color:#f92672">:</span> <span style="color:#f92672">?</span><span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> n<span style="color:#f92672">:</span> <span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">if</span> (byte) <span style="color:#f92672">|</span>b<span style="color:#f92672">|</span> b <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">else</span> <span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(n, @as(<span style="color:#66d9ef">u8</span>, <span style="color:#ae81ff">2</span>));
+</span></span><span style="display:flex;"><span>} <span style="color:#75715e">// 
+</span></span></span></code></pre>
+<p>Notes:
+<ul>
+<li>The <a href="#get-command-line-args">get-command-line-args</a> sample shows a while loop used with an iterator which returns null when no more elements are left.</li>
+</ul>
+<hr></p>
+
+<p><span id='allocators'>
+<a href="/zig-common-tasks/samples/alloc.zig">Create allocators</a>
+</span></p>
+<pre style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Get the test allocator</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> alloc <span style="color:#f92672">=</span> std.testing.allocator;
+</span></span><span style="display:flex;"><span>    _ <span style="color:#f92672">=</span> alloc; <span style="color:#75715e">// use allocator
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Create a general-purpose allocator</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> gpa <span style="color:#f92672">=</span> std.heap.GeneralPurposeAllocator(.{}){};
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// call deinit to free it if necessary
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">defer</span> _ <span style="color:#f92672">=</span> gpa.deinit();
+</span></span><span style="display:flex;"><span>    _ <span style="color:#f92672">=</span> gpa.allocator(); <span style="color:#75715e">// use allocator
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Get system-native page allocator</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> alloc<span style="color:#f92672">:</span> std.mem.Allocator <span style="color:#f92672">=</span> std.heap.page_allocator;
+</span></span><span style="display:flex;"><span>    _ <span style="color:#f92672">=</span> alloc; <span style="color:#75715e">// use allocator
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Create a fixed buffer allocator</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> alloc<span style="color:#f92672">:</span> std.mem.Allocator <span style="color:#f92672">=</span> init<span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// use an array as the &#34;heap&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">var</span> buffer<span style="color:#f92672">:</span> [<span style="color:#ae81ff">1024</span>]<span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">undefined</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> fba <span style="color:#f92672">=</span> std.heap.FixedBufferAllocator.init(<span style="color:#f92672">&amp;</span>buffer);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">break</span> <span style="color:#f92672">:</span>init fba.allocator();
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    _ <span style="color:#f92672">=</span> alloc; <span style="color:#75715e">// use allocator
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>} <span style="color:#75715e">// 
+</span></span></span></code></pre>
+<hr>
+
+<p><span id='get-command-line-args'>
+<a href="/zig-common-tasks/samples/get-args.zig">Get command line arguments</a>
+</span></p>
+<pre style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">argsWithAllocator - get an iterator, use an allocator</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> args <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.process.argsWithAllocator(alloc);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> args.deinit();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> (args.next()) <span style="color:#f92672">|</span>arg<span style="color:#f92672">|</span> {
+</span></span><span style="display:flex;"><span>        _ <span style="color:#f92672">=</span> arg; <span style="color:#75715e">// use arg
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">argsAlloc - get a slice, use an allocator</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> args <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.process.argsAlloc(alloc);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> std.process.argsFree(alloc, args);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (args) <span style="color:#f92672">|</span>arg<span style="color:#f92672">|</span> {
+</span></span><span style="display:flex;"><span>        _ <span style="color:#f92672">=</span> arg; <span style="color:#75715e">// use arg
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">args - get an iterator, no allocation but not fully portable</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> builtin <span style="color:#f92672">=</span> @import(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">builtin</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> args <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (builtin.os.tag <span style="color:#f92672">=</span><span style="color:#f92672">=</span> .windows <span style="color:#66d9ef">or</span> builtin.os.tag <span style="color:#f92672">=</span><span style="color:#f92672">=</span> .wasi)
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// this sample does not work on Windows and WASI
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Linux, MacOS etc. can use the simpler args() method:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        std.process.args();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> (args.next()) <span style="color:#f92672">|</span>arg<span style="color:#f92672">|</span> {
+</span></span><span style="display:flex;"><span>        _ <span style="color:#f92672">=</span> arg; <span style="color:#75715e">// use arg
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    }
+</span></span><span style="display:flex;"><span>} <span style="color:#75715e">//
+</span></span></span></code></pre>
+<p>Notes:
+<ul>
+<li>the first item in <code>args</code> is the program path itself.</li>
+<li>not using the allocator version makes the code less cross-platform.</li>
+</ul>
+<hr></p>
+
+<p><span id='get-env-vars'>
+<a href="/zig-common-tasks/samples/get-system-envs.zig">Get environment variables</a>
+</span></p>
+<pre style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Get a single environment variable</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> path <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.process.getEnvVarOwned(alloc, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">PATH</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> alloc.free(path);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expect(path.len <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Get all environment variables</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> env <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.process.getEnvMap(alloc);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> env.deinit();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expect(env.count() <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>} <span style="color:#75715e">//
+</span></span></span></code></pre>
+<hr>
+
+<p><span id='parse-json'>
+<a href="/zig-common-tasks/samples/parse-json.zig">JSON - Parse object</a>
+</span></p>
+<pre style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Parse JSON object</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> example_json<span style="color:#f92672">:</span> []<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#960050;background-color:#1e0010">\</span>{<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">a_number</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">10</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">a_str</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">hello</span><span style="color:#e6db74">&#34;</span>}
+</span></span><span style="display:flex;"><span>    ;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> JsonStruct <span style="color:#f92672">=</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>        a_number<span style="color:#f92672">:</span> <span style="color:#66d9ef">u32</span>,
+</span></span><span style="display:flex;"><span>        a_str<span style="color:#f92672">:</span> []<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">u8</span>
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> parsed <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.json.parseFromSlice(JsonStruct, alloc, example_json, .{});
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> parsed.deinit();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> result <span style="color:#f92672">=</span> parsed.value;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(@as(<span style="color:#66d9ef">u32</span>, <span style="color:#ae81ff">10</span>), result.a_number);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqualSlices(<span style="color:#66d9ef">u8</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">hello</span><span style="color:#e6db74">&#34;</span>, result.a_str);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span></code></pre>
+<hr>
+
+<p><span id='write-json'>
+<a href="/zig-common-tasks/samples/write-json.zig">JSON - Write object</a>
+</span></p>
+<pre style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Write JSON object</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> example_json<span style="color:#f92672">:</span> []<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#960050;background-color:#1e0010">\</span>{<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">a_number</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">:</span><span style="color:#ae81ff">10</span>,<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">a_str</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">:</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">hello</span><span style="color:#e6db74">&#34;</span>}
+</span></span><span style="display:flex;"><span>    ;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> stream <span style="color:#f92672">=</span> std.ArrayList(<span style="color:#66d9ef">u8</span>).init(alloc);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> stream.deinit();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.json.stringify(.{
+</span></span><span style="display:flex;"><span>        .a_number <span style="color:#f92672">=</span> @as(<span style="color:#66d9ef">u32</span>, <span style="color:#ae81ff">10</span>),
+</span></span><span style="display:flex;"><span>        .a_str <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">hello</span><span style="color:#e6db74">&#34;</span>,
+</span></span><span style="display:flex;"><span>    }, .{}, stream.writer());
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqualSlices(<span style="color:#66d9ef">u8</span>, example_json, stream.items);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span></code></pre>
+<hr>
+
+<p><span id='list-dirs'>
+<a href="/zig-common-tasks/samples/list_dirs.zig">List directory contents</a>
+</span></p>
+<pre style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">List contents of directory</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> children <span style="color:#f92672">=</span> std.fs.cwd().openDir(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">source</span><span style="color:#e6db74">&#34;</span>, .{}) <span style="color:#66d9ef">catch</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// couldn&#39;t open dir
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> children.close();
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// use the returned iterator to iterate over dir contents
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    _ <span style="color:#f92672">=</span> children.iterate();
+</span></span><span style="display:flex;"><span>} <span style="color:#75715e">// 
+</span></span></span></code></pre>
+<hr>
+
+<p><span id='print-something'>
+<a href="/zig-common-tasks/samples/print-something.zig">Print something to stdout/stderr</a>
+</span></p>
+<pre style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> main() <span style="color:#f92672">!</span><span style="color:#66d9ef">void</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// print to stdout (stderr would be getStdErr() - which has the same type)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> stdout <span style="color:#f92672">=</span> std.io.getStdOut();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> stdout.writeAll(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Hello, world!</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// similar construct to printf
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> stdout.writer().print(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">number: {d}, string: {s}</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, .{ <span style="color:#ae81ff">42</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">fourty-two</span><span style="color:#e6db74">&#34;</span> });
+</span></span><span style="display:flex;"><span>} <span style="color:#75715e">// 
+</span></span></span></code></pre>
+<hr>
+
+<p><span id='exec-process'>
+<a href="/zig-common-tasks/samples/exec_process.zig">Process - execute</a>
+</span></p>
+<pre style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Execute a process (inherit stdout and stderr)</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// the command to run
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> argv <span style="color:#f92672">=</span> [_][]<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">u8</span>{ <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">ls</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">./</span><span style="color:#e6db74">&#34;</span> };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// init a ChildProcess... cleanup is done by calling wait().
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> proc <span style="color:#f92672">=</span> std.ChildProcess.init(<span style="color:#f92672">&amp;</span>argv, alloc);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// ignore the streams to avoid the zig build blocking...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// REMOVE THESE IF YOU ACTUALLY WANT TO INHERIT THE STREAMS.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    proc.stdin_behavior <span style="color:#f92672">=</span> .Ignore;
+</span></span><span style="display:flex;"><span>    proc.stdout_behavior <span style="color:#f92672">=</span> .Ignore;
+</span></span><span style="display:flex;"><span>    proc.stderr_behavior <span style="color:#f92672">=</span> .Ignore;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> proc.spawn();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">//std.debug.print(&#34;Spawned process PID={}\n&#34;, .{proc.id});
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// the process only ends after this call returns.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> term <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> proc.wait();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// term can be .Exited, .Signal, .Stopped, .Unknown
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(term, std.ChildProcess.Term{ .Exited <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span> });
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Execute a process (consume stdout and stderr into allocated memory)</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// the command to run
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> argv <span style="color:#f92672">=</span> [_][]<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">u8</span>{ <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">ls</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">./</span><span style="color:#e6db74">&#34;</span> };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> proc <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.ChildProcess.run(.{
+</span></span><span style="display:flex;"><span>        .allocator <span style="color:#f92672">=</span> alloc,
+</span></span><span style="display:flex;"><span>        .argv <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>argv,
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// on success, we own the output streams
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">defer</span> alloc.free(proc.stdout);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> alloc.free(proc.stderr);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> term <span style="color:#f92672">=</span> proc.term;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(term, std.ChildProcess.Term{ .Exited <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span> });
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expect(proc.stdout.len <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(proc.stderr.len, <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span></code></pre>
+<hr>
+
+<p><span id='read-file-bytes'>
+<a href="/zig-common-tasks/samples/read-file-bytes.zig">Read file bytes</a>
+</span></p>
+<pre style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Read bytes from a file</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// current working directory
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> cwd <span style="color:#f92672">=</span> std.fs.cwd();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> handle <span style="color:#f92672">=</span> cwd.openFile(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">hello.txt</span><span style="color:#e6db74">&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// this is the default, so could be just &#39;.{}&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    .{ .mode <span style="color:#f92672">=</span> .read_only }) <span style="color:#66d9ef">catch</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// file not found
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> handle.close();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// read into this buffer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> buffer<span style="color:#f92672">:</span> [<span style="color:#ae81ff">64</span>]<span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">undefined</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> bytes_read <span style="color:#f92672">=</span> handle.readAll(<span style="color:#f92672">&amp;</span>buffer) <span style="color:#66d9ef">catch</span> <span style="color:#66d9ef">unreachable</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// if bytes_read is smaller than buffer.len, then EOF was reached
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(@as(<span style="color:#66d9ef">usize</span>, <span style="color:#ae81ff">6</span>), bytes_read);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> expected_bytes <span style="color:#f92672">=</span> [_]<span style="color:#66d9ef">u8</span>{ <span style="color:#e6db74">&#39;h&#39;</span>, <span style="color:#e6db74">&#39;e&#39;</span>, <span style="color:#e6db74">&#39;l&#39;</span>, <span style="color:#e6db74">&#39;l&#39;</span>, <span style="color:#e6db74">&#39;o&#39;</span>, <span style="color:#ae81ff">&#39;\n&#39;</span> };
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqualSlices(<span style="color:#66d9ef">u8</span>, <span style="color:#f92672">&amp;</span>expected_bytes, buffer[<span style="color:#ae81ff">0</span>..bytes_read]);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span></code></pre>
+<hr>
+
+<p><span id='read-file-line-by-line'>
+<a href="/zig-common-tasks/samples/read-file-line-by-line.zig">Read file line by line</a>
+</span></p>
+<pre style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Read file one line at a time</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> max_bytes_per_line <span style="color:#f92672">=</span> <span style="color:#ae81ff">4096</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> file <span style="color:#f92672">=</span> std.fs.cwd().openFile(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">my-file.txt</span><span style="color:#e6db74">&#34;</span>, .{}) <span style="color:#66d9ef">catch</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// couldn&#39;t open file
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> file.close();
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// wrapping the reader into a std.io.bufferedReader is usually advised
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> buffered_reader <span style="color:#f92672">=</span> std.io.bufferedReader(file.reader());
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> reader <span style="color:#f92672">=</span> buffered_reader.reader();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> (<span style="color:#66d9ef">try</span> reader.readUntilDelimiterOrEofAlloc(alloc, <span style="color:#ae81ff">&#39;\n&#39;</span>, max_bytes_per_line)) <span style="color:#f92672">|</span>line<span style="color:#f92672">|</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">defer</span> alloc.free(line);
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// use line
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    }
+</span></span><span style="display:flex;"><span>} <span style="color:#75715e">// 
+</span></span></span></code></pre>
+<hr>
+
+<p><span id='user-input'>
+<a href="/zig-common-tasks/samples/user-input.zig">Read user input from command line</a>
+</span></p>
+<pre style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> main() <span style="color:#f92672">!</span><span style="color:#66d9ef">void</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> stdin <span style="color:#f92672">=</span> std.io.getStdIn().reader();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> maybe_input <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> stdin.readUntilDelimiterOrEofAlloc(alloc, <span style="color:#ae81ff">&#39;\n&#39;</span>, max_line_size);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (maybe_input) <span style="color:#f92672">|</span>input<span style="color:#f92672">|</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">defer</span> alloc.free(input);
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// use input
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    }
+</span></span><span style="display:flex;"><span>} <span style="color:#75715e">// 
+</span></span></span></code></pre>
+<hr>
+
+<p><span id='socket-accept'>
+<a href="/zig-common-tasks/samples/socket-accept.zig">Socket - accept TCP connections</a>
+</span></p>
+<pre style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> localhostListener(port<span style="color:#f92672">:</span> <span style="color:#66d9ef">u16</span>) <span style="color:#f92672">!</span>std.net.Server {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> localhost <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.net.Address.resolveIp(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">0.0.0.0</span><span style="color:#e6db74">&#34;</span>, port);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> localhost.listen(.{});
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> main() <span style="color:#f92672">!</span><span style="color:#66d9ef">void</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> listener <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> localhostListener(<span style="color:#ae81ff">8081</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> listener.deinit();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> connection <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> listener.accept();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> connection.stream.close();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    std.log.info(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Accepted connection from {}</span><span style="color:#e6db74">&#34;</span>, .{connection.address});
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> printMessage(<span style="color:#f92672">&amp;</span>connection.stream.reader());
+</span></span><span style="display:flex;"><span>} <span style="color:#75715e">// 
+</span></span></span></code></pre>
+<p>Notes:
+<ul>
+<li>See also <a href="https://github.com/MasterQ32/zig-network">MasterQ32/zig-network</a>.</li>
+<li>This sample does not work on Windows. Help to fix it welcome.</li>
+</ul>
+<hr></p>
+
+<p><span id='socket-request'>
+<a href="/zig-common-tasks/samples/socket-request.zig">Socket - send data</a>
+</span></p>
+<pre style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> main() <span style="color:#f92672">!</span><span style="color:#66d9ef">void</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> remote <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.net.Address.resolveIp(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">0.0.0.0</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">8081</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> remote_stream <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.net.tcpConnectToAddress(remote);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> remote_stream.close();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> remote_stream.writer().writeAll(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">hello from Zig</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>} <span style="color:#75715e">// 
+</span></span></span></code></pre>
+<p>Notes:
+<ul>
+<li>See also <a href="https://github.com/MasterQ32/zig-network">MasterQ32/zig-network</a>.</li>
+<li>This sample does not work on Windows. Help to fix it welcome.</li>
+</ul>
+<hr></p>
+
+<p><span id='string-contains'>
+<a href="/zig-common-tasks/samples/string-contains.zig">String - check if it contains another</a>
+</span></p>
+<pre style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Check if a string contains another</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> to_find <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">string</span><span style="color:#e6db74">&#34;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> contains <span style="color:#f92672">=</span> std.mem.containsAtLeast(<span style="color:#66d9ef">u8</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">big string</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">1</span>, to_find);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expect(contains);
+</span></span><span style="display:flex;"><span>} <span style="color:#75715e">// 
+</span></span></span></code></pre>
+<hr>
+
+<p><span id='string-compare'>
+<a href="/zig-common-tasks/samples/string-compare.zig">String - compare two strings</a>
+</span></p>
+<pre style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Check if two strings are equal ignoring case (ASCII only)</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> are_equal <span style="color:#f92672">=</span> std.ascii.eqlIgnoreCase(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">hEllO</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Hello</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expect(are_equal);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Check if two strings are exactly equal</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> are_equal <span style="color:#f92672">=</span> std.mem.eql(<span style="color:#66d9ef">u8</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">hello</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">hello</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expect(are_equal);
+</span></span><span style="display:flex;"><span>} <span style="color:#75715e">// 
+</span></span></span></code></pre>
+<hr>
+
+<p><span id='string-to-number'>
+<a href="/zig-common-tasks/samples/string-to-number.zig">String - convert to number</a>
+</span></p>
+<pre style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Convert string to number</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// base-10 signed integer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> decimal <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.fmt.parseInt(<span style="color:#66d9ef">i32</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">42</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">10</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(@as(<span style="color:#66d9ef">i32</span>, <span style="color:#ae81ff">42</span>), decimal);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// floating-point number
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> float <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.fmt.parseFloat(<span style="color:#66d9ef">f64</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">3.1415</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(@as(<span style="color:#66d9ef">f64</span>, <span style="color:#ae81ff">3.1415</span>), float);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// base-2 unsigned integer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> byte <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.fmt.parseUnsigned(<span style="color:#66d9ef">u8</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">1_0101</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">2</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(@as(<span style="color:#66d9ef">u8</span>, <span style="color:#ae81ff">21</span>), byte);
+</span></span><span style="display:flex;"><span>} <span style="color:#75715e">// 
+</span></span></span></code></pre>
+<hr>
+
+<p><span id='string-utf8'>
+<a href="/zig-common-tasks/samples/string-utf8.zig">String - iterate over UTF-8 code points</a>
+</span></p>
+<pre style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Iterate over utf-8 string code points</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// reference: https://emojipedia.org/woman-astronaut/
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> utf8_str <span style="color:#f92672">=</span> (<span style="color:#66d9ef">try</span> std.unicode.Utf8View.init(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">👩‍🚀</span><span style="color:#e6db74">&#34;</span>)).iterator();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(@as(<span style="color:#f92672">?</span>u21, <span style="color:#ae81ff">0x1F469</span>), utf8_str.nextCodepoint());
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(@as(<span style="color:#f92672">?</span>u21, <span style="color:#ae81ff">0x200D</span>), utf8_str.nextCodepoint());
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(@as(<span style="color:#f92672">?</span>u21, <span style="color:#ae81ff">0x1F680</span>), utf8_str.nextCodepoint());
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(@as(<span style="color:#f92672">?</span>u21, <span style="color:#66d9ef">null</span>), utf8_str.nextCodepoint());
+</span></span><span style="display:flex;"><span>} <span style="color:#75715e">// 
+</span></span></span></code></pre>
+<hr>
+
+<p><span id='write-file'>
+<a href="/zig-common-tasks/samples/write-file.zig">Write to file</a>
+</span></p>
+<pre style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Write bytes to a file (create if necessary, append or replace contents)</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// current working directory
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> cwd <span style="color:#f92672">=</span> std.fs.cwd();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> file_path <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">hello.txt</span><span style="color:#e6db74">&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> handle <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> cwd.createFile(file_path, .{
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// set to true to fully replace the contents of the file
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        .truncate <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>,
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> handle.close();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> cwd.deleteFile(file_path) <span style="color:#66d9ef">catch</span> <span style="color:#66d9ef">unreachable</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// go to the end of the file if you want to append to the file
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// and `truncate` was set to `false` (otherwise this is not needed)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> handle.seekFromEnd(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// write bytes to the file
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> bytes_written <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> handle.write(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">hello Zig</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(@as(<span style="color:#66d9ef">usize</span>, <span style="color:#ae81ff">10</span>), bytes_written);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span></code></pre>
+<hr>
+</main>
+<footer>
+  <div>Zig Common Tasks is an independent project by Renato Athaydes and voluntary contributors.</div>
+  <div>The source code is hosted on <a href="https://github.com/renatoathaydes/zig-common-tasks/">GitHub</a> and <a href="https://www.opencode.net/renatoathaydes/zig-common-tasks/">OpenCode.net</a>. Contributions are welcome.</div>
+  <div>Everything in this website is on public domain: <a href="https://unlicense.org/">UNLICENSE</a>.</div>
+</footer>
+<script src="change-versions.js"></script>
+</body>
+</html>
