@@ -66,6 +66,8 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 
 <p><a href="#get-env-vars">Get environment variables</a></p>
 
+<p><a href="#http">HTTP Server and Client</a></p>
+
 <p><a href="#parse-json">JSON - Parse object</a></p>
 
 <p><a href="#write-json">JSON - Write object</a></p>
@@ -238,8 +240,10 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// the arena allocator will free everything allocated through it
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// when it is de-initialized.
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">defer</span> alloc.deinit();
-</span></span><span style="display:flex;"><span>} <span style="color:#75715e">// 
-</span></span></span></code></pre>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span></code></pre>
 <hr>
 
 <p><span id='get-command-line-args'>
@@ -298,6 +302,80 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expect(env.count() <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>);
 </span></span><span style="display:flex;"><span>} <span style="color:#75715e">//
 </span></span></span></code></pre>
+<hr>
+
+<p><span id='http'>
+<a href="/zig-common-tasks/samples/http.zig">HTTP Server and Client</a>
+</span></p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">const</span> http <span style="color:#f92672">=</span> std.http;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> alloc <span style="color:#f92672">=</span> std.testing.allocator;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> server_starter() <span style="color:#f92672">!</span><span style="color:#66d9ef">void</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> server_address <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.net.Address.resolveIp(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">127.0.0.1</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">8080</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> server <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> server_address.listen(.{ .reuse_address <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span> });
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// This would normally be an infinite loop!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// But for testing, we only handle a single request and stop.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> client_con <span style="color:#f92672">=</span> server.accept() <span style="color:#66d9ef">catch</span> <span style="color:#f92672">|</span>err<span style="color:#f92672">|</span> {
+</span></span><span style="display:flex;"><span>        std.log.err(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Unable to accept client connection: {s}</span><span style="color:#e6db74">&#34;</span>, .{@errorName(err)});
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    handle_connection(client_con) <span style="color:#66d9ef">catch</span> <span style="color:#f92672">|</span>err<span style="color:#f92672">|</span> {
+</span></span><span style="display:flex;"><span>        std.log.err(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Failed to handle request: {s}</span><span style="color:#e6db74">&#34;</span>, .{@errorName(err)});
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/// Handles connection by always responding with a hardcoded response (ok for GET, method_not_allowed otherwise).
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">/// Normally you would inspect the request and spawn a new Thread (or use async, coming soon to Zig!).
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">fn</span> handle_connection(client_con<span style="color:#f92672">:</span> std.net.Server.Connection) <span style="color:#f92672">!</span><span style="color:#66d9ef">void</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> client_con.stream.close();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> req_buffer <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> alloc.alloc(<span style="color:#66d9ef">u8</span>, <span style="color:#ae81ff">8</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">1024</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> alloc.free(req_buffer);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> server <span style="color:#f92672">=</span> http.Server.init(client_con, req_buffer);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> req <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> server.receiveHead();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (req.head.method <span style="color:#f92672">=</span><span style="color:#f92672">=</span> .GET) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> req.respond(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Hello</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, .{ .extra_headers <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>.{.{ .name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Content-Type</span><span style="color:#e6db74">&#34;</span>, .value <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">text/plain</span><span style="color:#e6db74">&#34;</span> }} });
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> req.respond(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&#34;</span>, .{ .status <span style="color:#f92672">=</span> .method_not_allowed });
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">HTTP Server and HTTP Client</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// The Server needs to run on a separate Thread.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> server_thread <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.Thread.spawn(.{ .allocator <span style="color:#f92672">=</span> alloc }, server_starter, .{});
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> server_thread.join();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Create a HTTP client that will send a single request to the Server.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> client <span style="color:#f92672">=</span> http.Client{ .allocator <span style="color:#f92672">=</span> alloc };
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> client.deinit();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> uri <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.Uri.parse(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">http://localhost:8080/hello</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> headers <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> alloc.alloc(<span style="color:#66d9ef">u8</span>, <span style="color:#ae81ff">4</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">1024</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> alloc.free(headers);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> req <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> client.open(http.Method.GET, uri, .{ .server_header_buffer <span style="color:#f92672">=</span> headers });
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> req.deinit();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// send and wait for a full response
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> req.send();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> req.wait();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// first, make sure the status code was 200 OK
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(.ok, req.response.status);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// read the full response body
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> body_reader <span style="color:#f92672">=</span> req.reader();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> body <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> body_reader.readAllAlloc(alloc, <span style="color:#ae81ff">1024</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> alloc.free(body);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// assert the response body is as expected
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(<span style="color:#ae81ff">6</span>, body.len);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> expected_body <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Hello</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqualSlices(<span style="color:#66d9ef">u8</span>, expected_body, body);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span></code></pre>
 <hr>
 
 <p><span id='parse-json'>
