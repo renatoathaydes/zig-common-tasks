@@ -34,4 +34,5 @@ test "Get an Arena allocator" {
     // the arena allocator will free everything allocated through it
     // when it is de-initialized.
     defer alloc.deinit();
-} // {{ end }}{{ eval contents }} Sample ends
+}
+
