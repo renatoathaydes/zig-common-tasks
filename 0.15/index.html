@@ -5,11 +5,11 @@
     <title>Zig Common Tasks</title>
     <meta name="description" content="Zig Common Tasks (various code samples)">
     <meta name="author" content="Renato Athaydes and contributors">
-    <link rel="stylesheet" href="/zig-common-tasks/style.css">
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 <header>
-<img src="/zig-common-tasks/zig-logo.svg" style="width: 5em"/><h1>Zig Common Tasks</h1>
+<img src="/zig-logo.svg" style="width: 5em"/><h1>Zig Common Tasks</h1>
 </header>
 <main>
 <form id="zig-version-form">
@@ -107,7 +107,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <div class='warning'>The Zig Standard Library is currently in flux. Effort is taken to keep all samples up-to-date, but changes are to be expected until it stabilizes after Zig 1.0.</div>
 
 <p><span id='c-interop-strings'>
-<a href="/zig-common-tasks/samples/c_string.zig">C interop - Strings</a>
+<a href="/samples/c_string.zig">C interop - Strings</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#75715e">// WARNING: @cImport will eventually go away.
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">//          https://github.com/ziglang/zig/issues/20630
@@ -140,7 +140,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <hr>
 
 <p><span id='c-interop-void-pointers'>
-<a href="/zig-common-tasks/samples/c_void_pointer.zig">C interop - void pointers</a>
+<a href="/samples/c_void_pointer.zig">C interop - void pointers</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">const</span> c_code <span style="color:#f92672">=</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#960050;background-color:#1e0010">\</span>
@@ -176,7 +176,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <hr>
 
 <p><span id='check-null'>
-<a href="/zig-common-tasks/samples/check-null.zig">Check for null (using nullable value)</a>
+<a href="/samples/check-null.zig">Check for null (using nullable value)</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Use value orelse a default</span><span style="color:#e6db74">&#34;</span> {
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> byte<span style="color:#f92672">:</span> <span style="color:#f92672">?</span><span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
@@ -207,7 +207,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <hr></p>
 
 <p><span id='allocators'>
-<a href="/zig-common-tasks/samples/alloc.zig">Create allocators</a>
+<a href="/samples/alloc.zig">Create allocators</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Get the test allocator</span><span style="color:#e6db74">&#34;</span> {
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> alloc <span style="color:#f92672">=</span> std.testing.allocator;
@@ -248,7 +248,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <hr>
 
 <p><span id='get-command-line-args'>
-<a href="/zig-common-tasks/samples/get-args.zig">Get command line arguments</a>
+<a href="/samples/get-args.zig">Get command line arguments</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">argsWithAllocator - get an iterator, use an allocator</span><span style="color:#e6db74">&#34;</span> {
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> args <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.process.argsWithAllocator(alloc);
@@ -289,7 +289,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <hr></p>
 
 <p><span id='get-env-vars'>
-<a href="/zig-common-tasks/samples/get-system-envs.zig">Get environment variables</a>
+<a href="/samples/get-system-envs.zig">Get environment variables</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Get a single environment variable</span><span style="color:#e6db74">&#34;</span> {
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> path <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.process.getEnvVarOwned(alloc, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">PATH</span><span style="color:#e6db74">&#34;</span>);
@@ -306,7 +306,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <hr>
 
 <p><span id='http'>
-<a href="/zig-common-tasks/samples/http.zig">HTTP Server and Client</a>
+<a href="/samples/http.zig">HTTP Server and Client</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">const</span> http <span style="color:#f92672">=</span> std.http;
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> alloc <span style="color:#f92672">=</span> std.testing.allocator;
@@ -403,7 +403,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <hr>
 
 <p><span id='parse-json'>
-<a href="/zig-common-tasks/samples/parse-json.zig">JSON - Parse object</a>
+<a href="/samples/parse-json.zig">JSON - Parse object</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Parse JSON object</span><span style="color:#e6db74">&#34;</span> {
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> example_json<span style="color:#f92672">:</span> []<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span>
@@ -426,7 +426,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <hr>
 
 <p><span id='write-json'>
-<a href="/zig-common-tasks/samples/write-json.zig">JSON - Write object</a>
+<a href="/samples/write-json.zig">JSON - Write object</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Write JSON object</span><span style="color:#e6db74">&#34;</span> {
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> example_json<span style="color:#f92672">:</span> []<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span>
@@ -448,7 +448,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <hr>
 
 <p><span id='list-dirs'>
-<a href="/zig-common-tasks/samples/list_dirs.zig">List directory contents</a>
+<a href="/samples/list_dirs.zig">List directory contents</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">List contents of directory</span><span style="color:#e6db74">&#34;</span> {
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> children <span style="color:#f92672">=</span> std.fs.cwd().openDir(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">source</span><span style="color:#e6db74">&#34;</span>, .{ .iterate <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span> }) <span style="color:#66d9ef">catch</span> {
@@ -463,7 +463,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <hr>
 
 <p><span id='print-something'>
-<a href="/zig-common-tasks/samples/print-something.zig">Print something to stdout/stderr</a>
+<a href="/samples/print-something.zig">Print something to stdout/stderr</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> main() <span style="color:#f92672">!</span><span style="color:#66d9ef">void</span> {
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// print to stdout (stderr would be getStdErr() - which has the same type)
@@ -477,7 +477,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <hr>
 
 <p><span id='exec-process'>
-<a href="/zig-common-tasks/samples/exec_process.zig">Process - execute</a>
+<a href="/samples/exec_process.zig">Process - execute</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Execute a process (inherit stdout and stderr)</span><span style="color:#e6db74">&#34;</span> {
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// the command to run
@@ -528,7 +528,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <hr>
 
 <p><span id='read-file-bytes'>
-<a href="/zig-common-tasks/samples/read-file-bytes.zig">Read file bytes</a>
+<a href="/samples/read-file-bytes.zig">Read file bytes</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Read bytes from a file</span><span style="color:#e6db74">&#34;</span> {
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// current working directory
@@ -557,7 +557,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <hr>
 
 <p><span id='read-file-line-by-line'>
-<a href="/zig-common-tasks/samples/read-file-line-by-line.zig">Read file line by line</a>
+<a href="/samples/read-file-line-by-line.zig">Read file line by line</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Read file one line at a time</span><span style="color:#e6db74">&#34;</span> {
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> max_bytes_per_line <span style="color:#f92672">=</span> <span style="color:#ae81ff">4096</span>;
@@ -579,7 +579,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <hr>
 
 <p><span id='user-input'>
-<a href="/zig-common-tasks/samples/user-input.zig">Read user input from command line</a>
+<a href="/samples/user-input.zig">Read user input from command line</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> main() <span style="color:#f92672">!</span><span style="color:#66d9ef">void</span> {
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> stdin <span style="color:#f92672">=</span> std.io.getStdIn().reader();
@@ -593,7 +593,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <hr>
 
 <p><span id='socket-accept'>
-<a href="/zig-common-tasks/samples/socket-accept.zig">Socket - accept TCP connections</a>
+<a href="/samples/socket-accept.zig">Socket - accept TCP connections</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> localhostListener(port<span style="color:#f92672">:</span> <span style="color:#66d9ef">u16</span>) <span style="color:#f92672">!</span>std.net.Server {
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> localhost <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.net.Address.resolveIp(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">0.0.0.0</span><span style="color:#e6db74">&#34;</span>, port);
@@ -619,7 +619,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <hr></p>
 
 <p><span id='socket-request'>
-<a href="/zig-common-tasks/samples/socket-request.zig">Socket - send data</a>
+<a href="/samples/socket-request.zig">Socket - send data</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> main() <span style="color:#f92672">!</span><span style="color:#66d9ef">void</span> {
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> remote <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.net.Address.resolveIp(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">0.0.0.0</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">8081</span>);
@@ -636,7 +636,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <hr></p>
 
 <p><span id='string-contains'>
-<a href="/zig-common-tasks/samples/string-contains.zig">String - check if it contains another</a>
+<a href="/samples/string-contains.zig">String - check if it contains another</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Check if a string contains another</span><span style="color:#e6db74">&#34;</span> {
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> to_find <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">string</span><span style="color:#e6db74">&#34;</span>;
@@ -647,7 +647,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <hr>
 
 <p><span id='string-compare'>
-<a href="/zig-common-tasks/samples/string-compare.zig">String - compare two strings</a>
+<a href="/samples/string-compare.zig">String - compare two strings</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Check if two strings are equal ignoring case (ASCII only)</span><span style="color:#e6db74">&#34;</span> {
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> are_equal <span style="color:#f92672">=</span> std.ascii.eqlIgnoreCase(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">hEllO</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Hello</span><span style="color:#e6db74">&#34;</span>);
@@ -662,7 +662,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <hr>
 
 <p><span id='string-to-number'>
-<a href="/zig-common-tasks/samples/string-to-number.zig">String - convert to number</a>
+<a href="/samples/string-to-number.zig">String - convert to number</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Convert string to number</span><span style="color:#e6db74">&#34;</span> {
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// base-10 signed integer
@@ -681,7 +681,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <hr>
 
 <p><span id='string-utf8'>
-<a href="/zig-common-tasks/samples/string-utf8.zig">String - iterate over UTF-8 code points</a>
+<a href="/samples/string-utf8.zig">String - iterate over UTF-8 code points</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Iterate over utf-8 string code points</span><span style="color:#e6db74">&#34;</span> {
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// reference: https://emojipedia.org/woman-astronaut/
@@ -695,7 +695,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <hr>
 
 <p><span id='threads'>
-<a href="/zig-common-tasks/samples/threads.zig">Threads and channels</a>
+<a href="/samples/threads.zig">Threads and channels</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">const</span> Val <span style="color:#f92672">=</span> std.atomic.Value(<span style="color:#66d9ef">u32</span>);
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> Order <span style="color:#f92672">=</span> std.builtin.AtomicOrder;
@@ -726,7 +726,7 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <hr>
 
 <p><span id='write-file'>
-<a href="/zig-common-tasks/samples/write-file.zig">Write to file</a>
+<a href="/samples/write-file.zig">Write to file</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Write bytes to a file (create if necessary, append or replace contents)</span><span style="color:#e6db74">&#34;</span> {
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// current working directory
