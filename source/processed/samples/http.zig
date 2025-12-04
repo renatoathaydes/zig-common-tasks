@@ -25,9 +25,13 @@ fn server_starter() !void {
 /// Normally you would inspect the request and spawn a new Thread (or use async, coming soon to Zig!).
 fn handle_connection(client_con: std.net.Server.Connection) !void {
     defer client_con.stream.close();
-    const req_buffer = try alloc.alloc(u8, 8 * 1024);
-    defer alloc.free(req_buffer);
-    var server = http.Server.init(client_con, req_buffer);
+    const read_buffer = try alloc.alloc(u8, 8 * 1024);
+    defer alloc.free(read_buffer);
+    const write_buffer = try alloc.alloc(u8, 8 * 1024);
+    defer alloc.free(write_buffer);
+    var con_reader = client_con.stream.reader(read_buffer);
+    var con_writer = client_con.stream.writer(write_buffer);
+    var server = http.Server.init(con_reader.interface(), &con_writer.interface);
     var req = try server.receiveHead();
     if (req.head.method == .GET) {
         try req.respond("Hello\n", .{ .extra_headers = &.{.{ .name = "Content-Type", .value = "text/plain" }} });
@@ -46,23 +50,42 @@ test "HTTP Server and HTTP Client" {
     defer client.deinit();
 
     const uri = try std.Uri.parse("http://localhost:8080/hello");
-    const headers = try alloc.alloc(u8, 4 * 1024);
-    defer alloc.free(headers);
 
-    var req = try client.open(http.Method.GET, uri, .{ .server_header_buffer = headers });
+    // create a GET request with some headers
+    var req = try client.request(http.Method.GET, uri, .{ .headers = .{
+        .user_agent = .{ .override = "zig-example-http-client" },
+    }, .extra_headers = &.{.{ .name = "Accept", .value = "text/plain" }} });
     defer req.deinit();
 
-    // send and wait for a full response
-    try req.send();
-    try req.wait();
+    // send it!
+    try req.sendBodiless();
+
+    // receive the request header
+    var response = try req.receiveHead(&.{});
 
     // first, make sure the status code was 200 OK
-    try std.testing.expectEqual(.ok, req.response.status);
+    try std.testing.expectEqual(.ok, response.head.status);
+
+    // we can iterate over the response headers
+    var resp_headers = response.head.iterateHeaders();
+    var content_type_found = false;
+    var content_length: usize = 0;
+    while (resp_headers.next()) |header| {
+        if (std.ascii.eqlIgnoreCase(header.name, "Content-Length")) {
+            content_length = try std.fmt.parseUnsigned(usize, header.value, 10);
+        } else if (std.ascii.eqlIgnoreCase(header.name, "Content-Type")) {
+            content_type_found = true;
+            try std.testing.expectEqualSlices(u8, header.value, "text/plain");
+        }
+    }
+    try std.testing.expectEqual(@as(usize, 6), content_length);
+    try std.testing.expect(content_type_found);
 
     // read the full response body
-    var body_reader = req.reader();
-    const body = try body_reader.readAllAlloc(alloc, 1024);
+    const body = try alloc.alloc(u8, content_length);
     defer alloc.free(body);
+    var body_reader = response.reader(body);
+    try body_reader.fill(content_length);
 
     // assert the response body is as expected
     try std.testing.expectEqual(6, body.len);
