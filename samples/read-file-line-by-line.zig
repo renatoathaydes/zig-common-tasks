@@ -10,11 +10,12 @@ const alloc = std.testing.allocator;
         return;
     };
     defer file.close();
-    // wrapping the reader into a std.io.bufferedReader is usually advised
-    var buffered_reader = std.io.bufferedReader(file.reader());
-    const reader = buffered_reader.reader();
-    while (try reader.readUntilDelimiterOrEofAlloc(alloc, '\n', max_bytes_per_line)) |line| {
-        defer alloc.free(line);
+
+    var read_buffer: [max_bytes_per_line]u8 = undefined;
+    var reader = file.readerStreaming(&read_buffer).interface;
+
+    while (try reader.takeDelimiter('\n')) |line| {
         // use line
+        _ = line;
     }
 } //  Sample ends
