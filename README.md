@@ -43,6 +43,8 @@ git reset --hard
 mv target-0.xx target/0.xx
 # ensure that gitignore does not ignore the new directory
 gedit .gitignore
+# add the new version to the older HTML files (zversion's select tag)
+gedit target/0.xx/index.html
 # done, commit, tag and push everything
 git commit -am "..."
 git tag 0.xx
