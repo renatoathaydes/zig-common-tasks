@@ -466,13 +466,20 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 <a href="/zig-common-tasks/samples/print-something.zig">Print something to stdout/stderr</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> main() <span style="color:#f92672">!</span><span style="color:#66d9ef">void</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// print to stdout (stderr would be getStdErr() - which has the same type)
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> stdout <span style="color:#f92672">=</span> std.io.getStdOut();
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> stdout.writeAll(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Hello, world!</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> buffer<span style="color:#f92672">:</span> [<span style="color:#ae81ff">1024</span>]<span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">undefined</span>;
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// similar construct to printf
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> stdout.writer().print(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">number: {d}, string: {s}</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, .{ <span style="color:#ae81ff">42</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">fourty-two</span><span style="color:#e6db74">&#34;</span> });
-</span></span><span style="display:flex;"><span>} <span style="color:#75715e">// 
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Use File.stdout() or File.stderr()
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> writer <span style="color:#f92672">=</span> std.fs.File.stdout().writer(<span style="color:#f92672">&amp;</span>buffer);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> stdout <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>writer.interface;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> stdout.print(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Hello world!</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, .{});
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// you can provide arguments, similar to C&#39;s printf,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// though in Zig the format is checked at compile-time!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> stdout.print(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">number: {d}, string: {s}</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, .{ <span style="color:#ae81ff">42</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">fourty-two</span><span style="color:#e6db74">&#34;</span> });
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> stdout.flush(); <span style="color:#75715e">// Don&#39;t forget to flush!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>} <span style="color:#75715e">// 
 </span></span></span></code></pre>
 <hr>
 

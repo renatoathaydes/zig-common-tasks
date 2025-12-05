@@ -2,11 +2,21 @@
 const std = @import("std");
 
 // Sample starts herepub fn main() !void {
-    // print to stdout (stderr would be getStdErr() - which has the same type)
-    const stdout = std.io.getStdOut();
-    try stdout.writeAll("Hello, world!\n");
+    var buffer: [1024]u8 = undefined;
 
-    // similar construct to printf
-    try stdout.writer().print("number: {d}, string: {s}\n", .{ 42, "fourty-two" });
+    // Use File.stdout() or File.stderr()
+    var writer = std.fs.File.stdout().writer(&buffer);
+    const stdout = &writer.interface;
+
+    try stdout.print("Hello world!\n", .{});
+
+    // you can provide arguments, similar to C's printf,
+    // though in Zig the format is checked at compile-time!
+    try stdout.print("number: {d}, string: {s}\n", .{ 42, "fourty-two" });
+
+    try stdout.flush(); // Don't forget to flush!
 } //  Sample ends
 
+test "check main" {
+    try main();
+}
