@@ -1,4 +1,7 @@
-// {{ define name "Create allocators" }}{{ define id "allocators" }}{{ eval name }}
+// {{ define name "Create allocators" }}
+// {{ define id "allocators" }}
+// {{ define category "Memory Management" }}
+// {{ eval name }}
 const std = @import("std");
 
 // Sample starts here{{ slot contents }}\

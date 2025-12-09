@@ -1,4 +1,7 @@
-// {{ define name "Read user input from command line" }}{{ define id "user-input" }}{{ eval name }}
+// {{ define name "Read user input from command line" }}
+// {{ define id "user-input" }}
+// {{ define category "IO and OS facilities" }}
+// {{ eval name }}
 const std = @import("std");
 
 const alloc = std.heap.page_allocator;

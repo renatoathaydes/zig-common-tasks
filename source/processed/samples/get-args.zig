@@ -1,4 +1,7 @@
-// {{ define name "Get command line arguments" }}{{ define id "get-command-line-args" }}{{ eval name }}
+// {{ define name "Get command line arguments" }}
+// {{ define id "get-command-line-args" }}
+// {{ define category "IO and OS facilities" }}
+// {{ eval name }}
 const std = @import("std");
 
 const alloc = std.testing.allocator;

@@ -1,4 +1,7 @@
-// {{ define name "Read file bytes" }}{{ define id "read-file-bytes" }}{{ eval name }}
+// {{ define name "Read file bytes" }}
+// {{ define id "read-file-bytes" }}
+// {{ define category "IO and OS facilities" }}
+// {{ eval name }}
 const std = @import("std");
 
 // Sample starts here{{ slot contents }}\

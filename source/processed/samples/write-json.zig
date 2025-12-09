@@ -1,4 +1,7 @@
-// {{ define name "JSON - Write object" }}{{ define id "write-json" }}{{ eval name }}
+// {{ define name "JSON - Write object" }}
+// {{ define id "write-json" }}
+// {{ define category "Protocols and Serialization" }}
+// {{ eval name }}
 const std = @import("std");
 
 // Sample starts here{{ slot contents }}\

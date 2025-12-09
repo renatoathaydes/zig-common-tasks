@@ -1,4 +1,7 @@
-// {{ define name "Socket - send data" }}{{ define id "socket-request" }}{{ eval name }}
+// {{ define name "Socket - send data" }}
+// {{ define id "socket-request" }}
+// {{ define category "IO and OS facilities" }}
+// {{ eval name }}
 const std = @import("std");
 
 test "Verify that code compiles" {

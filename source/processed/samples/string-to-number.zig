@@ -1,4 +1,7 @@
-// {{ define name "String - convert to number" }}{{ define id "string-to-number" }}{{ eval name }}
+// {{ define name "String - convert to number" }}
+// {{ define id "string-to-number" }}
+// {{ define category "String Processing" }}
+// {{ eval name }}
 const std = @import("std");
 
 // Sample starts here{{ slot contents }}\

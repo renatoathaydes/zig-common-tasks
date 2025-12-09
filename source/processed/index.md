@@ -15,11 +15,9 @@ Notice that it's implicit in many code samples:
 
 * `const std = @import("std");` at the top.
 * the `alloc` variable is of type `std.mem.Allocator`. See the [allocators](#allocators) sample for how to get one.
-* Zig's multi-line strings are rendered incorrectly: `\\\ Foo` is shown as `\ Foo`, with a red slash.
-  This is hard to fix due to the bug being in an [unmaintained Go library](https://github.com/russross/blackfriday) used to convert markdown to HTML. Once Zig has such library, maybe we'll switch to that and the problem will be gone :)!
 
-> All samples are tested on MacOS, Windows and Linux/Ubuntu using the Zig version declared in
-> [.github/workflows/test.yml](https://github.com/renatoathaydes/zig-common-tasks/blob/main/.github/workflows/test.yml).
+> All samples are tested on MacOS, Windows and Linux/Ubuntu using the Zig version selected in the selector
+> in the top-right corner of this page.
 
 ## Contributing
 
@@ -28,8 +26,13 @@ Read instructions on this project repository's README on [GitHub](https://github
 ## Index
 
 {{ component _toc.html }}
-{{ for sample (sortBy name) /processed/samples }}
+{{ for all (groupBy category) /processed/samples }}
+{{ component _category.html }}
+### {{ eval all.group }}
+{{ for sample (sortBy name) eval all.values }}
 [{{ eval sample.name }}](#{{ eval sample.id }})
+{{ end }}
+{{ end }}
 {{ end }}
 {{ end }}
 

@@ -1,4 +1,7 @@
-// {{ define name "Print something to stdout/stderr" }}{{ define id "print-something" }}{{ eval name }}
+// {{ define name "Print something to stdout/stderr" }}
+// {{ define id "print-something" }}
+// {{ define category "IO and OS facilities" }}
+// {{ eval name }}
 const std = @import("std");
 
 pub fn main() !void {

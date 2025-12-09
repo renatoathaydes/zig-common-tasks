@@ -1,4 +1,7 @@
-// {{ define name "JSON - Parse object" }}{{ define id "parse-json" }}{{ eval name }}
+// {{ define name "JSON - Parse object" }}
+// {{ define id "parse-json" }}
+// {{ define category "Protocols and Serialization" }}
+// {{ eval name }}
 const std = @import("std");
 
 const alloc = std.testing.allocator;

@@ -1,4 +1,7 @@
-// {{ define name "C interop - Strings" }}{{ define id "c-interop-strings" }}{{ eval name }}
+// {{ define name "C Strings" }}
+// {{ define id "c-interop-strings" }}
+// {{ define category "C Interop" }}
+// {{ eval name }}
 const std = @import("std");
 const alloc = std.testing.allocator;
 const expect = std.testing.expect;

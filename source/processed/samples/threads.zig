@@ -1,4 +1,7 @@
-// {{ define name "Threads and channels" }}{{ define id "threads" }}{{ eval name }}
+// {{ define name "Threads and channels" }}
+// {{ define id "threads" }}
+// {{ define category "IO and OS facilities" }}
+// {{ eval name }}
 const std = @import("std");
 const expectEqual = std.testing.expectEqual;
 

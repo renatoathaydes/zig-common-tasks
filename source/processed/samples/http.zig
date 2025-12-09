@@ -1,4 +1,7 @@
-// {{ define name "HTTP Server and Client" }}{{ define id "http" }}{{ eval name }}
+// {{ define name "HTTP Server and Client" }}
+// {{ define id "http" }}
+// {{ define category "Protocols and Serialization" }}
+// {{ eval name }}
 const std = @import("std");
 
 // Sample starts here{{ slot contents }}\

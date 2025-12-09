@@ -1,4 +1,7 @@
-// {{ define name "Socket - accept TCP connections" }}{{ define id "socket-accept" }}{{ eval name }}
+// {{ define name "Socket - accept TCP connections" }}
+// {{ define id "socket-accept" }}
+// {{ define category "IO and OS facilities" }}
+// {{ eval name }}
 const std = @import("std");
 
 const alloc: std.mem.Allocator = std.heap.page_allocator;

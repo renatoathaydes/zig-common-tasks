@@ -1,4 +1,7 @@
-// {{ define name "String - check if it contains another" }}{{ define id "string-contains" }}{{ eval name }}
+// {{ define name "String - check if it contains another" }}
+// {{ define id "string-contains" }}
+// {{ define category "String Processing" }}
+// {{ eval name }}
 const std = @import("std");
 
 // Sample starts here{{ slot contents }}\

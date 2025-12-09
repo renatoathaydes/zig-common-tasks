@@ -1,4 +1,7 @@
-// {{ define name "List directory contents" }}{{ define id "list-dirs" }}{{ eval name }}
+// {{ define name "List directory contents" }}
+// {{ define id "list-dirs" }}
+// {{ define category "IO and OS facilities" }}
+// {{ eval name }}
 const std = @import("std");
 
 // Sample starts here{{ slot contents }}\

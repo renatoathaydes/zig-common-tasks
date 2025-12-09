@@ -1,4 +1,7 @@
-// {{ define name "Process - execute" }}{{ define id "exec-process" }}{{ eval name }}
+// {{ define name "Process - execute" }}
+// {{ define id "exec-process" }}
+// {{ define category "IO and OS facilities" }}
+// {{ eval name }}
 const std = @import("std");
 
 const alloc = std.testing.allocator;

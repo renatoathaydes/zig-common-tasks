@@ -1,4 +1,7 @@
-// {{ define name "Read file line by line" }}{{ define id "read-file-line-by-line" }}{{ eval name }}
+// {{ define name "Read file line by line" }}
+// {{ define id "read-file-line-by-line" }}
+// {{ define category "IO and OS facilities" }}
+// {{ eval name }}
 const std = @import("std");
 
 const alloc = std.testing.allocator;

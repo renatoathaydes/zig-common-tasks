@@ -1,4 +1,7 @@
-// {{ define name "C interop - void pointers" }}{{ define id "c-interop-void-pointers" }}{{ eval name }}
+// {{ define name "void pointers" }}
+// {{ define id "c-interop-void-pointers" }}
+// {{ define category "C Interop" }}
+// {{ eval name }}
 const std = @import("std");
 const alloc = std.testing.allocator;
 const expect = std.testing.expect;

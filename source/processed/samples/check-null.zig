@@ -1,4 +1,7 @@
-// {{ define name "Check for null (using nullable value)" }}{{ define id "check-null" }}{{ eval name }}
+// {{ define name "Check for null (using nullable value)" }}
+// {{ define id "check-null" }}
+// {{ define category "Basics" }}
+// {{ eval name }}
 const std = @import("std");
 
 // Sample starts here{{ slot contents }}\

@@ -1,4 +1,7 @@
-// {{ define name "String - iterate over UTF-8 code points" }}{{ define id "string-utf8" }}{{ eval name }}
+// {{ define name "String - iterate over UTF-8 code points" }}
+// {{ define id "string-utf8" }}
+// {{ define category "String Processing" }}
+// {{ eval name }}
 const std = @import("std");
 
 // Sample starts here{{ slot contents }}\

@@ -1,4 +1,7 @@
-// {{ define name "Write to file" }}{{ define id "write-file" }}{{ eval name }}
+// {{ define name "Write to file" }}
+// {{ define id "write-file" }}
+// {{ define category "IO and OS facilities" }}
+// {{ eval name }}
 const std = @import("std");
 
 // Sample starts here{{ slot contents }}\

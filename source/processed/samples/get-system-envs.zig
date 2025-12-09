@@ -1,4 +1,7 @@
-// {{ define name "Get environment variables" }}{{ define id "get-env-vars" }}{{ eval name }}
+// {{ define name "Get environment variables" }}
+// {{ define id "get-env-vars" }}
+// {{ define category "IO and OS facilities" }}
+// {{ eval name }}
 const std = @import("std");
 
 const alloc = std.testing.allocator;

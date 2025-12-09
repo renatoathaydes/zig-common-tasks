@@ -1,4 +1,7 @@
-// {{ define name "String - compare two strings" }}{{ define id "string-compare" }}{{ eval name }}
+// {{ define name "String - compare two strings" }}
+// {{ define id "string-compare" }}
+// {{ define category "String Processing" }}
+// {{ eval name }}
 const std = @import("std");
 
 // Sample starts here{{ slot contents }}\
