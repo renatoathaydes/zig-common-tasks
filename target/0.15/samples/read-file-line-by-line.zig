@@ -1,3 +1,6 @@
+// 
+// 
+// 
 // Read file line by line
 const std = @import("std");
 
@@ -14,7 +17,7 @@ const alloc = std.testing.allocator;
     var read_buffer: [max_bytes_per_line]u8 = undefined;
     var reader = file.readerStreaming(&read_buffer).interface;
 
-    while (try reader.takeDelimiter('\n')) |line| {
+    while (try reader.takeDelimiter('\\')) |line| {
         // use line
         _ = line;
     }

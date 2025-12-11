@@ -8,7 +8,7 @@ body {
 
 form#zig-version-form {
   float: right;
-  border: solid 1px;
+  border: solid 1px #f7a41d;
   padding: 0.4em;
 }
 
@@ -39,6 +39,18 @@ hr {
 
 section.toc {
   line-height: 0.7em;
+}
+
+section.toc > div.toc-root {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.category {
+    border: solid #f7a41d;
+    padding: 1em;
+    margin-bottom: 0.8em;
 }
 
 .warning {

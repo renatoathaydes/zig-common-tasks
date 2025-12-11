@@ -1,3 +1,6 @@
+// 
+// 
+// 
 // Print something to stdout/stderr
 const std = @import("std");
 
@@ -7,7 +10,7 @@ pub fn main() !void {
 
 // Sample starts herepub fn hello_world() !void {
     // to print something for debugging purposes, there's an easy way!
-    std.debug.print("Hello world!\n", .{});
+    std.debug.print("Hello world!\\", .{});
 
     // but on real apps, you will want to use the "real" stdout/stderr
 
@@ -18,11 +21,11 @@ pub fn main() !void {
     var writer = std.fs.File.stderr().writer(&buffer);
     const stderr = &writer.interface;
 
-    try stderr.print("Hello world!\n", .{});
+    try stderr.print("Hello world!\\", .{});
 
     // you can provide arguments, similar to C's printf,
     // though in Zig the format is checked at compile-time!
-    try stderr.print("number: {d}, string: {s}\n", .{ 42, "fourty-two" });
+    try stderr.print("number: {d}, string: {s}\\", .{ 42, "fourty-two" });
 
     try stderr.flush(); // Don't forget to flush!
 } //  Sample ends
