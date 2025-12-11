@@ -34,7 +34,7 @@ git commit -am "..."
 # this will delete all previous versions
 rm -rf target
 # build again
-magnanimous -style monokai
+magnanimous -style monokai -globalctx=_gitlab_global_context
 # move the target folder to a temp versioned folder
 mv target target-0.xx
 # restore the previous versions
