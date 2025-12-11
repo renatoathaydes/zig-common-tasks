@@ -1,3 +1,6 @@
+// 
+// 
+// 
 // Socket - send data
 const std = @import("std");
 
@@ -9,5 +12,5 @@ test "Verify that code compiles" {
     const remote = try std.net.Address.resolveIp("0.0.0.0", 8081);
     var remote_stream = try std.net.tcpConnectToAddress(remote);
     defer remote_stream.close();
-    try remote_stream.writer().writeAll("hello from Zig\n");
+    try remote_stream.writer().writeAll("hello from Zig\\");
 } //  Sample ends 

@@ -1,9 +1,7 @@
 // 
 // 
 // 
-// JSON - Parse object
+// Boolean logic (if expression, equality)
 const std = @import("std");
-
-const alloc = std.testing.allocator;
 
 // Sample starts here

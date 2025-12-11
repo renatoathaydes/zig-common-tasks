@@ -40,13 +40,11 @@
 <ul>
 <li><code>const std = @import(&quot;std&quot;);</code> at the top.</li>
 <li>the <code>alloc</code> variable is of type <code>std.mem.Allocator</code>. See the <a href="#allocators">allocators</a> sample for how to get one.</li>
-<li>Zig&rsquo;s multi-line strings are rendered incorrectly: <code>\\ Foo</code> is shown as <code>\ Foo</code>, with a red slash.
-This is hard to fix due to the bug being in an <a href="https://github.com/russross/blackfriday">unmaintained Go library</a> used to convert markdown to HTML. Once Zig has such library, maybe we&rsquo;ll switch to that and the problem will be gone :)!</li>
 </ul>
 
 <blockquote>
-<p>All samples are tested on MacOS, Windows and Linux/Ubuntu using the Zig version declared in
-<a href="https://github.com/renatoathaydes/zig-common-tasks/blob/main/.github/workflows/test.yml">.github/workflows/test.yml</a>.</p>
+<p>All samples are tested on MacOS, Windows and Linux/Ubuntu using the Zig version selected in the selector
+in the top-right corner of this page.</p>
 </blockquote>
 
 <h2>Contributing</h2>
@@ -55,59 +53,132 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 
 <h2>Index</h2>
 <section class="toc">
-<p><a href="#c-interop-strings">C interop - Strings</a></p>
+<div class="toc-root">
+<div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
 
-<p><a href="#c-interop-void-pointers">C interop - void pointers</a></p>
+</div><div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
 
-<p><a href="#check-null">Check for null (using nullable value)</a></p>
+</div><div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
 
-<p><a href="#allocators">Create allocators</a></p>
+</div><div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
 
-<p><a href="#get-command-line-args">Get command line arguments</a></p>
+</div><div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
 
-<p><a href="#get-env-vars">Get environment variables</a></p>
+</div><div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
 
-<p><a href="#http">HTTP Server and Client</a></p>
+</div><div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
 
-<p><a href="#parse-json">JSON - Parse object</a></p>
+</div><div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
 
-<p><a href="#write-json">JSON - Write object</a></p>
+</div><div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
 
-<p><a href="#list-dirs">List directory contents</a></p>
+</div><div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
 
-<p><a href="#print-something">Print something to stdout/stderr</a></p>
+</div><div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
 
-<p><a href="#exec-process">Process - execute</a></p>
+</div><div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
 
-<p><a href="#read-file-bytes">Read file bytes</a></p>
+</div><div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
 
-<p><a href="#read-file-line-by-line">Read file line by line</a></p>
+</div><div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
 
-<p><a href="#user-input">Read user input from command line</a></p>
+</div><div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
 
-<p><a href="#socket-accept">Socket - accept TCP connections</a></p>
+</div><div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
 
-<p><a href="#socket-request">Socket - send data</a></p>
+</div><div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
 
-<p><a href="#string-contains">String - check if it contains another</a></p>
+</div><div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
 
-<p><a href="#string-compare">String - compare two strings</a></p>
+</div><div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
 
-<p><a href="#string-to-number">String - convert to number</a></p>
+</div><div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
 
-<p><a href="#string-utf8">String - iterate over UTF-8 code points</a></p>
+</div><div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
 
-<p><a href="#threads">Threads and channels</a></p>
+</div><div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
 
-<p><a href="#write-file">Write to file</a></p>
+</div><div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
 
+</div><div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
+
+</div><div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
+
+</div><div class="category">
+<p>{{ for sample (sortBy name) eval all.values }}</p>
+
+</div>
+</div>
 </section>
 <h2>Code samples</h2>
 
 <div class='warning'>The Zig Standard Library is currently in flux. Effort is taken to keep all samples up-to-date, but changes are to be expected until it stabilizes after Zig 1.0.</div>
 
+<p><span id='boolean-logic'>
+<a href="/zig-common-tasks/samples/boolean-logic.zig">Boolean logic (if expression, equality)</a>
+</span></p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Basic boolean operators</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Zig uses `and` and `or`, unlike many languages that use `&amp;&amp;` and `||`
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> std.testing.expect(<span style="color:#66d9ef">true</span> <span style="color:#66d9ef">and</span> <span style="color:#66d9ef">true</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expect(<span style="color:#66d9ef">false</span> <span style="color:#66d9ef">or</span> <span style="color:#66d9ef">true</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// but negation is still done using `!`
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> std.testing.expect(<span style="color:#f92672">!</span><span style="color:#66d9ef">true</span> <span style="color:#66d9ef">or</span> <span style="color:#66d9ef">true</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">If expressions</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> x <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Zig does not have the ternary operator (`x ? 1 : 0`), but it has `if` expressions!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(<span style="color:#ae81ff">42</span>, <span style="color:#66d9ef">if</span> (x) <span style="color:#ae81ff">42</span> <span style="color:#66d9ef">else</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Equality</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// testing equality with `==` or `!=` works for numeric types, booleans and types
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> std.testing.expect(<span style="color:#ae81ff">2</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expect(<span style="color:#66d9ef">false</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> (<span style="color:#ae81ff">2</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>));
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expect(@TypeOf(<span style="color:#66d9ef">true</span>) <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">bool</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// but it doesn&#39;t work for other types, such as strings (or slices)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> array1 <span style="color:#f92672">=</span> [_]<span style="color:#66d9ef">u8</span>{ <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span> };
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> array2 <span style="color:#f92672">=</span> [_]<span style="color:#66d9ef">u8</span>{ <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span> };
+</span></span><span style="display:flex;"><span>    std.mem.sort(<span style="color:#66d9ef">u8</span>, <span style="color:#f92672">&amp;</span>array2, {}, std.sort.asc(<span style="color:#66d9ef">u8</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// the pointers are NOT the same (comparing arrays would not even compile)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> std.testing.expect(<span style="color:#f92672">&amp;</span>array1 <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>array2);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// even if the contents are the same
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> std.testing.expect(std.mem.eql(<span style="color:#66d9ef">u8</span>, <span style="color:#f92672">&amp;</span>array1, <span style="color:#f92672">&amp;</span>array2));
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span></code></pre>
+<hr>
+
 <p><span id='c-interop-strings'>
-<a href="/zig-common-tasks/samples/c_string.zig">C interop - Strings</a>
+<a href="/zig-common-tasks/samples/c_string.zig">C Strings</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#75715e">// WARNING: @cImport will eventually go away.
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">//          https://github.com/ziglang/zig/issues/20630
@@ -133,42 +204,6 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> expect(<span style="color:#f92672">!</span>std.mem.eql(<span style="color:#66d9ef">u8</span>, span(cstr), hzSlice));
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> expect(std.mem.eql(<span style="color:#66d9ef">u8</span>, span(cstr), span(hc)));
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span></code></pre>
-<hr>
-
-<p><span id='c-interop-void-pointers'>
-<a href="/zig-common-tasks/samples/c_void_pointer.zig">C interop - void pointers</a>
-</span></p>
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">const</span> c_code <span style="color:#f92672">=</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#960050;background-color:#1e0010">\</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#960050;background-color:#1e0010">\</span>static <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> _value;
-</span></span><span style="display:flex;"><span>    <span style="color:#960050;background-color:#1e0010">\</span><span style="color:#66d9ef">void</span> store_void(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> v) { _value <span style="color:#f92672">=</span> v; }
-</span></span><span style="display:flex;"><span>    <span style="color:#960050;background-color:#1e0010">\</span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> get_void() { <span style="color:#66d9ef">return</span> _value; }
-</span></span><span style="display:flex;"><span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// WARNING: @cImport will eventually go away.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">//          https://github.com/ziglang/zig/issues/20630
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> c <span style="color:#f92672">=</span> @cImport({
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// normally you would include headers or even c files, like this:
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">//@cInclude(&#34;test.c&#34;);
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// but for this sample, C code is directly defined here
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    @cDefine(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">MY_C_CODE</span><span style="color:#e6db74">&#34;</span>, c_code);
-</span></span><span style="display:flex;"><span>});
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">deal with void pointer from C</span><span style="color:#e6db74">&#34;</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// send some value to be stored in C as a void* pointer
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    c.store_void(@as(<span style="color:#f92672">?</span><span style="color:#f92672">*</span><span style="color:#66d9ef">const</span> anyopaque, <span style="color:#f92672">&amp;</span>@as(<span style="color:#66d9ef">u32</span>, <span style="color:#ae81ff">10</span>)));
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// retrieve the value which now is &#34;untyped&#34;, or opaque
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> untyped_value<span style="color:#f92672">:</span> <span style="color:#f92672">?</span><span style="color:#f92672">*</span><span style="color:#66d9ef">const</span> anyopaque <span style="color:#f92672">=</span> c.get_void();
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// to restore the type, we must cast it to the known type explicitly
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> value<span style="color:#f92672">:</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">u32</span> <span style="color:#f92672">=</span> @ptrCast(@alignCast( untyped_value));
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(@as(<span style="color:#66d9ef">u32</span>, <span style="color:#ae81ff">10</span>), value.<span style="color:#f92672">*</span>);
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>
@@ -460,6 +495,166 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    _ <span style="color:#f92672">=</span> children.iterate();
 </span></span><span style="display:flex;"><span>} <span style="color:#75715e">// 
 </span></span></span></code></pre>
+<hr>
+
+<p><span id='loops'>
+<a href="/zig-common-tasks/samples/looping.zig">Loops</a>
+</span></p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Simple for-each loop</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> items <span style="color:#f92672">=</span> [_]<span style="color:#66d9ef">i32</span>{ <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span> };
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> sum<span style="color:#f92672">:</span> <span style="color:#66d9ef">i32</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (items) <span style="color:#f92672">|</span>item<span style="color:#f92672">|</span> {
+</span></span><span style="display:flex;"><span>        sum <span style="color:#f92672">+</span><span style="color:#f92672">=</span> item;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(sum, <span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">3</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">4</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Looping with indexes</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> items<span style="color:#f92672">:</span> [<span style="color:#ae81ff">4</span>]<span style="color:#66d9ef">i32</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">undefined</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// the first item is the range being iterated over, the second gives the index
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">for</span> (<span style="color:#ae81ff">4</span>..<span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">0</span>..) <span style="color:#f92672">|</span>value, index<span style="color:#f92672">|</span> {
+</span></span><span style="display:flex;"><span>        items[index] <span style="color:#f92672">=</span> @as(<span style="color:#66d9ef">i32</span>, @intCast(value));
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// notice that the range end is excluded
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> expected <span style="color:#f92672">=</span> [_]<span style="color:#66d9ef">i32</span>{ <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">6</span>, <span style="color:#ae81ff">7</span> };
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqualSlices(<span style="color:#66d9ef">i32</span>, <span style="color:#f92672">&amp;</span>expected, <span style="color:#f92672">&amp;</span>items);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">For expression</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> x <span style="color:#f92672">=</span> <span style="color:#66d9ef">for</span> (<span style="color:#ae81ff">1</span>..<span style="color:#ae81ff">10</span>) <span style="color:#f92672">|</span>i<span style="color:#f92672">|</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (i <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">break</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">too big</span><span style="color:#e6db74">&#34;</span>; <span style="color:#75715e">// if break is called within the for loop, this is the result
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        }
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> els<span style="color:#f92672">:</span> { <span style="color:#75715e">// if break is not called, the else block gives the result
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">break</span> <span style="color:#f92672">:</span>els <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">ok</span><span style="color:#e6db74">&#34;</span>;
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// if the range was 1..11, the x would be &#34;too big&#34;!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> std.testing.expectEqualSlices(<span style="color:#66d9ef">u8</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">ok</span><span style="color:#e6db74">&#34;</span>, x);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Simple while loop</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> done <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// as in most other languages, &#34;while&#34; can just take a boolean variable
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">while</span> (<span style="color:#f92672">!</span>done) {
+</span></span><span style="display:flex;"><span>        done <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expect(done);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">While not null</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// creating an iterable-like struct for this example
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> Items <span style="color:#f92672">=</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>        items<span style="color:#f92672">:</span> []<span style="color:#66d9ef">i32</span>,
+</span></span><span style="display:flex;"><span>        index<span style="color:#f92672">:</span> <span style="color:#66d9ef">usize</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> nextItem(self<span style="color:#f92672">:</span> <span style="color:#f92672">*</span>@This()) <span style="color:#f92672">?</span><span style="color:#66d9ef">i32</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (self.index <span style="color:#f92672">&gt;</span><span style="color:#f92672">=</span> self.items.len) {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">defer</span> self.index <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> self.items[self.index];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> items_array <span style="color:#f92672">=</span> [_]<span style="color:#66d9ef">i32</span>{ <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span> };
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> items<span style="color:#f92672">:</span> Items <span style="color:#f92672">=</span> .{ .items <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>items_array };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> sum_before_null<span style="color:#f92672">:</span> <span style="color:#66d9ef">i32</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> has_null <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// loop while the iterable does not return null
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">while</span> (items.nextItem()) <span style="color:#f92672">|</span>item<span style="color:#f92672">|</span> {
+</span></span><span style="display:flex;"><span>        sum_before_null <span style="color:#f92672">+</span><span style="color:#f92672">=</span> item;
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> { <span style="color:#75715e">// when a null is found, the else branch runs and the loop exits
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        has_null <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expect(has_null);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(<span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">3</span>, sum_before_null);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">While not error</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// creating a struct for this example
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> Positive <span style="color:#f92672">=</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>        value<span style="color:#f92672">:</span> <span style="color:#66d9ef">u32</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> decrement(self<span style="color:#f92672">:</span> <span style="color:#f92672">*</span>@This()) <span style="color:#66d9ef">void</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (self.value <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>) self.value <span style="color:#f92672">-</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> get(self<span style="color:#f92672">:</span> <span style="color:#f92672">*</span>@This()) <span style="color:#66d9ef">anyerror</span><span style="color:#f92672">!</span><span style="color:#66d9ef">u32</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (self.value <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>) <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">error</span>.ZeroValue;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> self.value;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> positive<span style="color:#f92672">:</span> Positive <span style="color:#f92672">=</span> .{ .value <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span> };
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> sum<span style="color:#f92672">:</span> <span style="color:#66d9ef">u32</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// while no error, keep looping... decrement the value after each iteration.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">while</span> (positive.get()) <span style="color:#f92672">|</span>value<span style="color:#f92672">|</span> <span style="color:#f92672">:</span> (positive.decrement()) {
+</span></span><span style="display:flex;"><span>        sum <span style="color:#f92672">+</span><span style="color:#f92672">=</span> value;
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> <span style="color:#f92672">|</span>err<span style="color:#f92672">|</span> { <span style="color:#75715e">// the optional else branch can capture the final error
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        std.debug.assert(err <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">error</span>.ZeroValue);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(<span style="color:#ae81ff">3</span>, sum);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span></code></pre>
+<hr>
+
+<p><span id='memory-safety'>
+<a href="/zig-common-tasks/samples/memory-safety.zig">Memory Safety</a>
+</span></p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Stack allocated data</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> Example <span style="color:#f92672">=</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">fn</span> createDataOnTheStack() <span style="color:#66d9ef">anyerror</span><span style="color:#f92672">!</span>[]<span style="color:#66d9ef">u8</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// unless using allocators, data is allocated on the stack, not heap
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">var</span> data <span style="color:#f92672">=</span> [_]<span style="color:#66d9ef">u8</span>{ <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span> };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// data on the stack can only be used while in the scope of the function
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">try</span> std.testing.expectEqual(<span style="color:#ae81ff">1</span>, data[<span style="color:#ae81ff">0</span>]); <span style="color:#75715e">// OK
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// very, very bad
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span>data;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// using the returned value here would be unchecked Illegal Behavior,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// see: https://ziglang.org/documentation/master/#toc-Illegal-Behavior
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    _ <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> Example.createDataOnTheStack();
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Allocator-owned data</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> Example <span style="color:#f92672">=</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// in Zig, it is good practice to always take an allocator as an argument
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">// in any function that needs to allocate memory outside the stack.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">fn</span> createDataWithAllocator(allocator<span style="color:#f92672">:</span> std.mem.Allocator) <span style="color:#66d9ef">anyerror</span><span style="color:#f92672">!</span>[]<span style="color:#66d9ef">u8</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">const</span> local_data <span style="color:#f92672">=</span> [_]<span style="color:#66d9ef">u8</span>{ <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span> };
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">const</span> data <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> allocator.alloc(<span style="color:#66d9ef">u8</span>, <span style="color:#ae81ff">2</span>);
+</span></span><span style="display:flex;"><span>            @memcpy(data, <span style="color:#f92672">&amp;</span>local_data);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> data; <span style="color:#75715e">// OK, data is not allocated on the stack!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        }
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> alloc <span style="color:#f92672">=</span> std.testing.allocator;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> data <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> Example.createDataWithAllocator(alloc);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Allocator-allocated data must be freed using the same allocator!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// In tests, use `std.testing.allocator` and Zig will detect memory leaks and other errors.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// In Debug mode, you will get warnings or errors when using `std.heapGeneralPurposeAllocator`
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// in cases like double-free, use-after-free and memory leaks.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">defer</span> alloc.free(data);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(<span style="color:#ae81ff">1</span>, data[<span style="color:#ae81ff">0</span>]); <span style="color:#75715e">// OK!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Zig does bounds-checking in safe mode (it panics on error).
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// To opt-out, use `-O ReleaseFast`
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(<span style="color:#ae81ff">2</span>, data[<span style="color:#ae81ff">1</span>]); <span style="color:#75715e">// OK!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span></code></pre>
 <hr>
 
 <p><span id='print-something'>
@@ -763,6 +958,42 @@ This is hard to fix due to the bug being in an <a href="https://github.com/russr
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(@as(<span style="color:#66d9ef">usize</span>, <span style="color:#ae81ff">10</span>), bytes_written);
 </span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span></code></pre>
+<hr>
+
+<p><span id='c-interop-void-pointers'>
+<a href="/zig-common-tasks/samples/c_void_pointer.zig">void pointers</a>
+</span></p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">const</span> c_code <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#960050;background-color:#1e0010">\</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#960050;background-color:#1e0010">\</span>static <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> _value;
+</span></span><span style="display:flex;"><span>    <span style="color:#960050;background-color:#1e0010">\</span><span style="color:#66d9ef">void</span> store_void(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> v) { _value <span style="color:#f92672">=</span> v; }
+</span></span><span style="display:flex;"><span>    <span style="color:#960050;background-color:#1e0010">\</span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> get_void() { <span style="color:#66d9ef">return</span> _value; }
+</span></span><span style="display:flex;"><span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// WARNING: @cImport will eventually go away.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">//          https://github.com/ziglang/zig/issues/20630
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> c <span style="color:#f92672">=</span> @cImport({
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// normally you would include headers or even c files, like this:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">//@cInclude(&#34;test.c&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// but for this sample, C code is directly defined here
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    @cDefine(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">MY_C_CODE</span><span style="color:#e6db74">&#34;</span>, c_code);
+</span></span><span style="display:flex;"><span>});
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">deal with void pointer from C</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// send some value to be stored in C as a void* pointer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    c.store_void(@as(<span style="color:#f92672">?</span><span style="color:#f92672">*</span><span style="color:#66d9ef">const</span> anyopaque, <span style="color:#f92672">&amp;</span>@as(<span style="color:#66d9ef">u32</span>, <span style="color:#ae81ff">10</span>)));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// retrieve the value which now is &#34;untyped&#34;, or opaque
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> untyped_value<span style="color:#f92672">:</span> <span style="color:#f92672">?</span><span style="color:#f92672">*</span><span style="color:#66d9ef">const</span> anyopaque <span style="color:#f92672">=</span> c.get_void();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// to restore the type, we must cast it to the known type explicitly
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> value<span style="color:#f92672">:</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">u32</span> <span style="color:#f92672">=</span> @ptrCast(@alignCast( untyped_value));
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(@as(<span style="color:#66d9ef">u32</span>, <span style="color:#ae81ff">10</span>), value.<span style="color:#f92672">*</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>
 </span></span></code></pre>
 <hr>
