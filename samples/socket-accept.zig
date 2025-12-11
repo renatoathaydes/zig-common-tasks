@@ -17,7 +17,7 @@ test "Verify that listener can be created" {
 
 fn printMessage(reader: anytype) !void {
     var buf: [1024]u8 = undefined;
-    const msg = try reader.readUntilDelimiterOrEof(&buf, '\n') orelse "";
+    const msg = try reader.readUntilDelimiterOrEof(&buf, '\\') orelse "";
     std.debug.print("Got message: {s}", .{msg});
 }
 
