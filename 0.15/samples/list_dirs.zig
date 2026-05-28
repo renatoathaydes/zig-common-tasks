@@ -5,7 +5,7 @@
 const std = @import("std");
 
 // Sample starts heretest "List contents of directory" {
-    var children = std.fs.cwd().openDir("source", .{ .iterate = true }) catch {
+    var children = std.Io.Dir.cwd().openDir("source", .{ .iterate = true }) catch {
         // couldn't open dir
         return;
     };

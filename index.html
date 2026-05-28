@@ -241,8 +241,9 @@ in the top-right corner of this page.</p>
 </span></span><span style="display:flex;"><span>    _ <span style="color:#f92672">=</span> alloc; <span style="color:#75715e">// use allocator
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Create a general-purpose allocator</span><span style="color:#e6db74">&#34;</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> gpa <span style="color:#f92672">=</span> std.heap.GeneralPurposeAllocator(.{}){};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Create a general-purpose/debug allocator</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// notice: GeneralPurposeAllocator was renamed DebugAllocator in Zig 0.16.0
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> gpa <span style="color:#f92672">=</span> std.heap.DebugAllocator(.{}){};
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// call deinit to free it if necessary
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">defer</span> _ <span style="color:#f92672">=</span> gpa.deinit();
 </span></span><span style="display:flex;"><span>    _ <span style="color:#f92672">=</span> gpa.allocator(); <span style="color:#75715e">// use allocator
@@ -270,7 +271,6 @@ in the top-right corner of this page.</p>
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">defer</span> alloc.deinit();
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
 </span></span></code></pre>
 <hr>
 
@@ -278,31 +278,10 @@ in the top-right corner of this page.</p>
 <a href="/zig-common-tasks/samples/get-args.zig">Get command line arguments</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">argsWithAllocator - get an iterator, use an allocator</span><span style="color:#e6db74">&#34;</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> args <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.process.argsWithAllocator(alloc);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// this seems to be the only portable way to do it.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> a<span style="color:#f92672">:</span> std.process.Args <span style="color:#f92672">=</span> <span style="color:#66d9ef">undefined</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> args <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.process.Args.Iterator.initAllocator(a, alloc);
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> args.deinit();
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> (args.next()) <span style="color:#f92672">|</span>arg<span style="color:#f92672">|</span> {
-</span></span><span style="display:flex;"><span>        _ <span style="color:#f92672">=</span> arg; <span style="color:#75715e">// use arg
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    }
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">argsAlloc - get a slice, use an allocator</span><span style="color:#e6db74">&#34;</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> args <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.process.argsAlloc(alloc);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> std.process.argsFree(alloc, args);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (args) <span style="color:#f92672">|</span>arg<span style="color:#f92672">|</span> {
-</span></span><span style="display:flex;"><span>        _ <span style="color:#f92672">=</span> arg; <span style="color:#75715e">// use arg
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    }
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">args - get an iterator, no allocation but not fully portable</span><span style="color:#e6db74">&#34;</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> builtin <span style="color:#f92672">=</span> @import(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">builtin</span><span style="color:#e6db74">&#34;</span>);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> args <span style="color:#f92672">=</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (builtin.os.tag <span style="color:#f92672">=</span><span style="color:#f92672">=</span> .windows <span style="color:#66d9ef">or</span> builtin.os.tag <span style="color:#f92672">=</span><span style="color:#f92672">=</span> .wasi)
-</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// this sample does not work on Windows and WASI
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Linux, MacOS etc. can use the simpler args() method:
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        std.process.args();
-</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> (args.next()) <span style="color:#f92672">|</span>arg<span style="color:#f92672">|</span> {
 </span></span><span style="display:flex;"><span>        _ <span style="color:#f92672">=</span> arg; <span style="color:#75715e">// use arg
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    }
@@ -319,13 +298,17 @@ in the top-right corner of this page.</p>
 <a href="/zig-common-tasks/samples/get-system-envs.zig">Get environment variables</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Get a single environment variable</span><span style="color:#e6db74">&#34;</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> path <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.process.getEnvVarOwned(alloc, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">PATH</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// the only other way to get this is from std.process.Init
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> environ <span style="color:#f92672">=</span> std.testing.environ;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> path <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> environ.getAlloc(alloc, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">PATH</span><span style="color:#e6db74">&#34;</span>);
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> alloc.free(path);
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expect(path.len <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>);
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Get all environment variables</span><span style="color:#e6db74">&#34;</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> env <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.process.getEnvMap(alloc);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// the only other way to get this is from std.process.Init
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> environ <span style="color:#f92672">=</span> std.testing.environ;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> env <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.process.Environ.createMap(environ, alloc);
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> env.deinit();
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expect(env.count() <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>);
 </span></span><span style="display:flex;"><span>} <span style="color:#75715e">//
@@ -339,16 +322,18 @@ in the top-right corner of this page.</p>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> alloc <span style="color:#f92672">=</span> std.testing.allocator;
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> server_starter() <span style="color:#f92672">!</span><span style="color:#66d9ef">void</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> server_address <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.net.Address.resolveIp(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">127.0.0.1</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">8080</span>);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> server <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> server_address.listen(.{ .reuse_address <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span> });
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> io <span style="color:#f92672">=</span> std.testing.io;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> server_address <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.Io.net.IpAddress.parse(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">127.0.0.1</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">8080</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> server <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> server_address.listen(io, .{ .reuse_address <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span> });
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// This would normally be an infinite loop!
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// But for testing, we only handle a single request and stop.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> client_con <span style="color:#f92672">=</span> server.accept() <span style="color:#66d9ef">catch</span> <span style="color:#f92672">|</span>err<span style="color:#f92672">|</span> {
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> client_con <span style="color:#f92672">=</span> server.accept(io) <span style="color:#66d9ef">catch</span> <span style="color:#f92672">|</span>err<span style="color:#f92672">|</span> {
 </span></span><span style="display:flex;"><span>        std.log.err(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Unable to accept client connection: {s}</span><span style="color:#e6db74">&#34;</span>, .{@errorName(err)});
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span>;
 </span></span><span style="display:flex;"><span>    };
-</span></span><span style="display:flex;"><span>    handle_connection(client_con) <span style="color:#66d9ef">catch</span> <span style="color:#f92672">|</span>err<span style="color:#f92672">|</span> {
+</span></span><span style="display:flex;"><span>    handle_connection(io, client_con) <span style="color:#66d9ef">catch</span> <span style="color:#f92672">|</span>err<span style="color:#f92672">|</span> {
 </span></span><span style="display:flex;"><span>        std.log.err(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Failed to handle request: {s}</span><span style="color:#e6db74">&#34;</span>, .{@errorName(err)});
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span>;
 </span></span><span style="display:flex;"><span>    };
@@ -356,15 +341,15 @@ in the top-right corner of this page.</p>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e">/// Handles connection by always responding with a hardcoded response (ok for GET, method_not_allowed otherwise).
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">/// Normally you would inspect the request and spawn a new Thread (or use async, coming soon to Zig!).
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">fn</span> handle_connection(client_con<span style="color:#f92672">:</span> std.net.Server.Connection) <span style="color:#f92672">!</span><span style="color:#66d9ef">void</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> client_con.stream.close();
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">fn</span> handle_connection(io<span style="color:#f92672">:</span> std.Io, client_con<span style="color:#f92672">:</span> std.Io.net.Stream) <span style="color:#f92672">!</span><span style="color:#66d9ef">void</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> client_con.close(io);
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> read_buffer <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> alloc.alloc(<span style="color:#66d9ef">u8</span>, <span style="color:#ae81ff">8</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">1024</span>);
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> alloc.free(read_buffer);
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> write_buffer <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> alloc.alloc(<span style="color:#66d9ef">u8</span>, <span style="color:#ae81ff">8</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">1024</span>);
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> alloc.free(write_buffer);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> con_reader <span style="color:#f92672">=</span> client_con.stream.reader(read_buffer);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> con_writer <span style="color:#f92672">=</span> client_con.stream.writer(write_buffer);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> server <span style="color:#f92672">=</span> http.Server.init(con_reader.interface(), <span style="color:#f92672">&amp;</span>con_writer.interface);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> con_reader <span style="color:#f92672">=</span> client_con.reader(io, read_buffer);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> con_writer <span style="color:#f92672">=</span> client_con.writer(io, write_buffer);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> server <span style="color:#f92672">=</span> http.Server.init(<span style="color:#f92672">&amp;</span>con_reader.interface, <span style="color:#f92672">&amp;</span>con_writer.interface);
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> req <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> server.receiveHead();
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (req.head.method <span style="color:#f92672">=</span><span style="color:#f92672">=</span> .GET) {
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> req.respond(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Hello</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>, .{ .extra_headers <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>.{.{ .name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Content-Type</span><span style="color:#e6db74">&#34;</span>, .value <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">text/plain</span><span style="color:#e6db74">&#34;</span> }} });
@@ -374,12 +359,14 @@ in the top-right corner of this page.</p>
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">HTTP Server and HTTP Client</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> io <span style="color:#f92672">=</span> std.testing.io;
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// The Server needs to run on a separate Thread.
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> server_thread <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.Thread.spawn(.{ .allocator <span style="color:#f92672">=</span> alloc }, server_starter, .{});
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> server_thread.join();
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Create a HTTP client that will send a single request to the Server.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> client <span style="color:#f92672">=</span> http.Client{ .allocator <span style="color:#f92672">=</span> alloc };
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> client <span style="color:#f92672">=</span> http.Client{ .allocator <span style="color:#f92672">=</span> alloc, .io <span style="color:#f92672">=</span> io };
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> client.deinit();
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> uri <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.Uri.parse(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">http://localhost:8080/hello</span><span style="color:#e6db74">&#34;</span>);
@@ -478,11 +465,13 @@ in the top-right corner of this page.</p>
 <a href="/zig-common-tasks/samples/list_dirs.zig">List directory contents</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">List contents of directory</span><span style="color:#e6db74">&#34;</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> children <span style="color:#f92672">=</span> std.fs.cwd().openDir(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">source</span><span style="color:#e6db74">&#34;</span>, .{ .iterate <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span> }) <span style="color:#66d9ef">catch</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> io <span style="color:#f92672">=</span> std.testing.io;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> children <span style="color:#f92672">=</span> std.Io.Dir.cwd().openDir(io, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">source</span><span style="color:#e6db74">&#34;</span>, .{ .iterate <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span> }) <span style="color:#66d9ef">catch</span> {
 </span></span><span style="display:flex;"><span>        <span style="color:#75715e">// couldn&#39;t open dir
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span>;
 </span></span><span style="display:flex;"><span>    };
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> children.close();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> children.close(io);
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// use the returned iterator to iterate over dir contents
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    _ <span style="color:#f92672">=</span> children.iterate();
 </span></span><span style="display:flex;"><span>} <span style="color:#75715e">// 
@@ -602,19 +591,22 @@ in the top-right corner of this page.</p>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> Example <span style="color:#f92672">=</span> <span style="color:#66d9ef">struct</span> {
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">fn</span> createDataOnTheStack() <span style="color:#66d9ef">anyerror</span><span style="color:#f92672">!</span>[]<span style="color:#66d9ef">u8</span> {
 </span></span><span style="display:flex;"><span>            <span style="color:#75715e">// unless using allocators, data is allocated on the stack, not heap
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">var</span> data <span style="color:#f92672">=</span> [_]<span style="color:#66d9ef">u8</span>{ <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span> };
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">const</span> data <span style="color:#f92672">=</span> [_]<span style="color:#66d9ef">u8</span>{ <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span> };
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>            <span style="color:#75715e">// data on the stack can only be used while in the scope of the function
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">try</span> std.testing.expectEqual(<span style="color:#ae81ff">1</span>, data[<span style="color:#ae81ff">0</span>]); <span style="color:#75715e">// OK
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
-</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// very, very bad
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span>data;
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// very, very bad (does NOT COMPILE since Zig 0.16.0)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#75715e">// return &amp;data;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// we cannot return a pointer to stack data, so an error is the only way out!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">error</span>.CannotReturnLocalVariablePointer;
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>    };
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// using the returned value here would be unchecked Illegal Behavior,
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// see: https://ziglang.org/documentation/master/#toc-Illegal-Behavior
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    _ <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> Example.createDataOnTheStack();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> empty<span style="color:#f92672">:</span> []<span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>[_]<span style="color:#66d9ef">u8</span>{};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    _ <span style="color:#f92672">=</span> Example.createDataOnTheStack() <span style="color:#66d9ef">catch</span> empty;
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Allocator-owned data</span><span style="color:#e6db74">&#34;</span> {
@@ -656,13 +648,15 @@ in the top-right corner of this page.</p>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// to print something for debugging purposes, there&#39;s an easy way!
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    std.debug.print(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Hello world!</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>, .{});
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// but on real apps, you will want to use the &#34;real&#34; stdout/stderr
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// but on real apps, you will want to use the &#34;real&#34; stdout/stderr,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// and for that you&#39;ll need Io! See other ways to get Io in the Io sample.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> io <span style="color:#f92672">=</span> std.testing.io;
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> buffer<span style="color:#f92672">:</span> [<span style="color:#ae81ff">1024</span>]<span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">undefined</span>;
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Choose File.stdout() or File.stderr()
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Note: don&#39;t use stdout() in tests, it will block your test on &#34;zig build test&#34;!
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> writer <span style="color:#f92672">=</span> std.fs.File.stderr().writer(<span style="color:#f92672">&amp;</span>buffer);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> writer <span style="color:#f92672">=</span> std.Io.File.stderr().writer(io, <span style="color:#f92672">&amp;</span>buffer);
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> stderr <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>writer.interface;
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> stderr.print(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Hello world!</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>, .{});
@@ -680,48 +674,57 @@ in the top-right corner of this page.</p>
 <a href="/zig-common-tasks/samples/exec_process.zig">Process - execute</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Execute a process (inherit stdout and stderr)</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> io <span style="color:#f92672">=</span> std.testing.io;
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// the command to run
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> argv <span style="color:#f92672">=</span> [_][]<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">u8</span>{ <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">ls</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">./</span><span style="color:#e6db74">&#34;</span> };
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// init a ChildProcess... cleanup is done by calling wait().
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> proc <span style="color:#f92672">=</span> std.process.Child.init(<span style="color:#f92672">&amp;</span>argv, alloc);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// ignore the streams to avoid the zig build blocking...
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// REMOVE THESE IF YOU ACTUALLY WANT TO INHERIT THE STREAMS.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    proc.stdin_behavior <span style="color:#f92672">=</span> .Ignore;
-</span></span><span style="display:flex;"><span>    proc.stdout_behavior <span style="color:#f92672">=</span> .Ignore;
-</span></span><span style="display:flex;"><span>    proc.stderr_behavior <span style="color:#f92672">=</span> .Ignore;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> proc.spawn();
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> proc <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.process.spawn(io, .{
+</span></span><span style="display:flex;"><span>        .argv <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>argv,
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// here, we ignore the streams to avoid the zig build blocking...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">// by default, the streams are set to `.inherit`, so just remove these in most cases!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        .stdin <span style="color:#f92672">=</span> .ignore,
+</span></span><span style="display:flex;"><span>        .stdout <span style="color:#f92672">=</span> .ignore,
+</span></span><span style="display:flex;"><span>        .stderr <span style="color:#f92672">=</span> .ignore,
+</span></span><span style="display:flex;"><span>    });
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">//std.debug.print(&#34;Spawned process PID={}\\&#34;, .{proc.id});
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// the process only ends after this call returns.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> term <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> proc.wait();
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> term <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> proc.wait(io);
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// term can be .Exited, .Signal, .Stopped, .Unknown
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(term, std.process.Child.Term{ .Exited <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span> });
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(<span style="color:#ae81ff">0</span>, <span style="color:#66d9ef">switch</span> (term) {
+</span></span><span style="display:flex;"><span>        .exited <span style="color:#f92672">=</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">|</span>code<span style="color:#f92672">|</span> code,
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span> <span style="color:#f92672">=</span><span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>    });
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Execute a process (consume stdout and stderr into allocated memory)</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> io <span style="color:#f92672">=</span> std.testing.io;
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// the command to run
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> argv <span style="color:#f92672">=</span> [_][]<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">u8</span>{ <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">ls</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">./</span><span style="color:#e6db74">&#34;</span> };
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> proc <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.process.Child.run(.{
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// init a ChildProcess... cleanup is done by calling wait().
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> proc <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.process.spawn(io, .{
 </span></span><span style="display:flex;"><span>        .argv <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>argv,
-</span></span><span style="display:flex;"><span>        .allocator <span style="color:#f92672">=</span> alloc,
+</span></span><span style="display:flex;"><span>        .stdin <span style="color:#f92672">=</span> .ignore,
+</span></span><span style="display:flex;"><span>        .stdout <span style="color:#f92672">=</span> .pipe,
+</span></span><span style="display:flex;"><span>        .stderr <span style="color:#f92672">=</span> .pipe,
 </span></span><span style="display:flex;"><span>    });
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// on success, we own the output streams
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">defer</span> alloc.free(proc.stdout);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> alloc.free(proc.stderr);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// on success, the pipe streams are assigned to File objects.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    assert(proc.stdout <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>);
+</span></span><span style="display:flex;"><span>    assert(proc.stderr <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>);
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> term <span style="color:#f92672">=</span> proc.term;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> term <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> proc.wait(io);
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(std.process.Child.Term{ .Exited <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span> }, term);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expect(proc.stdout.len <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(proc.stderr.len, <span style="color:#ae81ff">0</span>);
-</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(<span style="color:#ae81ff">0</span>, <span style="color:#66d9ef">switch</span> (term) {
+</span></span><span style="display:flex;"><span>        .exited <span style="color:#f92672">=</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">|</span>code<span style="color:#f92672">|</span> code,
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span> <span style="color:#f92672">=</span><span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>    });
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span></code></pre>
@@ -731,26 +734,30 @@ in the top-right corner of this page.</p>
 <a href="/zig-common-tasks/samples/read-file-bytes.zig">Read file bytes</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Read bytes from a file</span><span style="color:#e6db74">&#34;</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// current working directory
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> cwd <span style="color:#f92672">=</span> std.fs.cwd();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> io <span style="color:#f92672">=</span> std.testing.io;
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> handle <span style="color:#f92672">=</span> cwd.openFile(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">hello.txt</span><span style="color:#e6db74">&#34;</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// this is the default, so could be just &#39;.{}&#39;
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    .{ .mode <span style="color:#f92672">=</span> .read_only }) <span style="color:#66d9ef">catch</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// current working directory
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> cwd <span style="color:#f92672">=</span> std.Io.Dir.cwd();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> handle <span style="color:#f92672">=</span> cwd.openFile(io, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">hello.txt</span><span style="color:#e6db74">&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// this is the default, so could be just &#39;.{}&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        .{ .mode <span style="color:#f92672">=</span> .read_only }) <span style="color:#66d9ef">catch</span> {
 </span></span><span style="display:flex;"><span>        <span style="color:#75715e">// file not found
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span>;
 </span></span><span style="display:flex;"><span>    };
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> handle.close();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> handle.close(io);
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// read into this buffer
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> buffer<span style="color:#f92672">:</span> [<span style="color:#ae81ff">64</span>]<span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">undefined</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> bytes_read <span style="color:#f92672">=</span> handle.readAll(<span style="color:#f92672">&amp;</span>buffer) <span style="color:#66d9ef">catch</span> <span style="color:#66d9ef">unreachable</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// create a Reader with a temp buffer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> temp_buffer<span style="color:#f92672">:</span> [<span style="color:#ae81ff">4096</span>]<span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">undefined</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> reader_impl <span style="color:#f92672">=</span> handle.reader(io, <span style="color:#f92672">&amp;</span>temp_buffer);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> reader <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>reader_impl.interface;
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// if bytes_read is smaller than buffer.len, then EOF was reached
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(@as(<span style="color:#66d9ef">usize</span>, <span style="color:#ae81ff">6</span>), bytes_read);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// read into this buffer, fails if cannot fill up the buffer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> buffer<span style="color:#f92672">:</span> [<span style="color:#ae81ff">6</span>]<span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">undefined</span>;
+</span></span><span style="display:flex;"><span>    reader.readSliceAll(<span style="color:#f92672">&amp;</span>buffer) <span style="color:#66d9ef">catch</span> <span style="color:#66d9ef">unreachable</span>;
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> expected_bytes <span style="color:#f92672">=</span> [_]<span style="color:#66d9ef">u8</span>{ <span style="color:#e6db74">&#39;h&#39;</span>, <span style="color:#e6db74">&#39;e&#39;</span>, <span style="color:#e6db74">&#39;l&#39;</span>, <span style="color:#e6db74">&#39;l&#39;</span>, <span style="color:#e6db74">&#39;o&#39;</span>, <span style="color:#ae81ff">&#39;\\&#39;</span> };
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqualSlices(<span style="color:#66d9ef">u8</span>, <span style="color:#f92672">&amp;</span>expected_bytes, buffer[<span style="color:#ae81ff">0</span>..bytes_read]);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqualSlices(<span style="color:#66d9ef">u8</span>, <span style="color:#f92672">&amp;</span>expected_bytes, <span style="color:#f92672">&amp;</span>buffer);
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span></code></pre>
@@ -760,15 +767,17 @@ in the top-right corner of this page.</p>
 <a href="/zig-common-tasks/samples/read-file-line-by-line.zig">Read file line by line</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Read file one line at a time</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> io <span style="color:#f92672">=</span> std.testing.io;
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> max_bytes_per_line <span style="color:#f92672">=</span> <span style="color:#ae81ff">4096</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> file <span style="color:#f92672">=</span> std.fs.cwd().openFile(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">my-file.txt</span><span style="color:#e6db74">&#34;</span>, .{}) <span style="color:#66d9ef">catch</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> file <span style="color:#f92672">=</span> std.Io.Dir.cwd().openFile(io, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">my-file.txt</span><span style="color:#e6db74">&#34;</span>, .{}) <span style="color:#66d9ef">catch</span> {
 </span></span><span style="display:flex;"><span>        <span style="color:#75715e">// couldn&#39;t open file
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span>;
 </span></span><span style="display:flex;"><span>    };
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> file.close();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> file.close(io);
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> read_buffer<span style="color:#f92672">:</span> [max_bytes_per_line]<span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">undefined</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> reader <span style="color:#f92672">=</span> file.readerStreaming(<span style="color:#f92672">&amp;</span>read_buffer).interface;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> reader <span style="color:#f92672">=</span> file.readerStreaming(io, <span style="color:#f92672">&amp;</span>read_buffer).interface;
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> (<span style="color:#66d9ef">try</span> reader.takeDelimiter(<span style="color:#ae81ff">&#39;\\&#39;</span>)) <span style="color:#f92672">|</span>line<span style="color:#f92672">|</span> {
 </span></span><span style="display:flex;"><span>        <span style="color:#75715e">// use line
@@ -795,20 +804,24 @@ in the top-right corner of this page.</p>
 <p><span id='socket-accept'>
 <a href="/zig-common-tasks/samples/socket-accept.zig">Socket - accept TCP connections</a>
 </span></p>
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> localhostListener(port<span style="color:#f92672">:</span> <span style="color:#66d9ef">u16</span>) <span style="color:#f92672">!</span>std.net.Server {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> localhost <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.net.Address.resolveIp(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">0.0.0.0</span><span style="color:#e6db74">&#34;</span>, port);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> localhost.listen(.{});
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> localhostListener(io<span style="color:#f92672">:</span> std.Io, port<span style="color:#f92672">:</span> <span style="color:#66d9ef">u16</span>) <span style="color:#f92672">!</span>std.Io.net.Server {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> localhost <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.Io.net.IpAddress.parse(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">0.0.0.0</span><span style="color:#e6db74">&#34;</span>, port);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> localhost.listen(io, .{});
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> main() <span style="color:#f92672">!</span><span style="color:#66d9ef">void</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> listener <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> localhostListener(<span style="color:#ae81ff">8081</span>);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> listener.deinit();
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> main(init<span style="color:#f92672">:</span> std.process.Init) <span style="color:#f92672">!</span><span style="color:#66d9ef">void</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> io <span style="color:#f92672">=</span> init.io;
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> connection <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> listener.accept();
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> connection.stream.close();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> listener <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> localhostListener(io, <span style="color:#ae81ff">8081</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> listener.deinit(io);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> connection <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> listener.accept(io);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> connection.close(io);
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    std.log.info(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Accepted connection from {}</span><span style="color:#e6db74">&#34;</span>, .{connection.address});
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> printMessage(<span style="color:#f92672">&amp;</span>connection.stream.reader());
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> buffer<span style="color:#f92672">:</span> [<span style="color:#ae81ff">1024</span>]<span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">undefined</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> printMessage(<span style="color:#f92672">&amp;</span>connection.reader(io, <span style="color:#f92672">&amp;</span>buffer).interface);
 </span></span><span style="display:flex;"><span>} <span style="color:#75715e">// 
 </span></span></span></code></pre>
 <p>Notes:
@@ -929,24 +942,31 @@ in the top-right corner of this page.</p>
 <a href="/zig-common-tasks/samples/write-file.zig">Write to file</a>
 </span></p>
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Write bytes to a file (create if necessary, append or replace contents)</span><span style="color:#e6db74">&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> io <span style="color:#f92672">=</span> std.testing.io;
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// current working directory
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> cwd <span style="color:#f92672">=</span> std.fs.cwd();
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> cwd <span style="color:#f92672">=</span> std.Io.Dir.cwd();
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> file_path <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">hello.txt</span><span style="color:#e6db74">&#34;</span>;
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> handle <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> cwd.createFile(file_path, .{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> handle <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> cwd.createFile(io, file_path, .{
 </span></span><span style="display:flex;"><span>        <span style="color:#75715e">// set to true to fully replace the contents of the file
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        .truncate <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>,
 </span></span><span style="display:flex;"><span>    });
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> handle.close();
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> cwd.deleteFile(file_path) <span style="color:#66d9ef">catch</span> <span style="color:#66d9ef">unreachable</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> handle.close(io);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> cwd.deleteFile(io, file_path) <span style="color:#66d9ef">catch</span> <span style="color:#66d9ef">unreachable</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> write_buffer<span style="color:#f92672">:</span> [<span style="color:#ae81ff">1024</span>]<span style="color:#66d9ef">u8</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">undefined</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> w <span style="color:#f92672">=</span> handle.writer(io, <span style="color:#f92672">&amp;</span>write_buffer);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> writer <span style="color:#f92672">=</span> w.interface;
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// go to the end of the file if you want to append to the file
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// and `truncate` was set to `false` (otherwise this is not needed)
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> handle.seekFromEnd(<span style="color:#ae81ff">0</span>);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">try</span> w.seekToUnbuffered(writer.end);
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// write bytes to the file
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> bytes_written <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> handle.write(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">hello Zig</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> bytes_written <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> writer.write(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">hello Zig</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>);
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expectEqual(@as(<span style="color:#66d9ef">usize</span>, <span style="color:#ae81ff">10</span>), bytes_written);
 </span></span><span style="display:flex;"><span>}

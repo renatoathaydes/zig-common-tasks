@@ -12,13 +12,15 @@ pub fn main() !void {
     // to print something for debugging purposes, there's an easy way!
     std.debug.print("Hello world!\\", .{});
 
-    // but on real apps, you will want to use the "real" stdout/stderr
+    // but on real apps, you will want to use the "real" stdout/stderr,
+    // and for that you'll need Io! See other ways to get Io in the Io sample.
+    const io = std.testing.io;
 
     var buffer: [1024]u8 = undefined;
 
     // Choose File.stdout() or File.stderr()
     // Note: don't use stdout() in tests, it will block your test on "zig build test"!
-    var writer = std.fs.File.stderr().writer(&buffer);
+    var writer = std.Io.File.stderr().writer(io, &buffer);
     const stderr = &writer.interface;
 
     try stderr.print("Hello world!\\", .{});
