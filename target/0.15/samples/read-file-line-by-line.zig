@@ -8,7 +8,7 @@ const alloc = std.testing.allocator;
 
 // Sample starts heretest "Read file one line at a time" {
     const max_bytes_per_line = 4096;
-    var file = std.fs.cwd().openFile("my-file.txt", .{}) catch {
+    var file = std.Io.Dir.cwd().openFile("my-file.txt", .{}) catch {
         // couldn't open file
         return;
     };

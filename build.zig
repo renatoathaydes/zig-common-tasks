@@ -27,13 +27,14 @@ const test_targets = [_]std.Target.Query{
 const samples_dir = "source/processed/samples/";
 
 fn testAllSamples(b: *std.Build, test_step: *std.Build.Step) !void {
-    var samples = try std.fs.cwd().openDir(samples_dir, .{ .iterate = true });
-    defer samples.close();
+    const io = b.graph.io;
+    var samples = try b.build_root.handle.openDir(io, samples_dir, .{ .iterate = true });
+    defer samples.close(io);
     var iterator = samples.iterate();
-    var child = try iterator.next();
+    var child = try iterator.next(io);
     var buffer: [1024]u8 = undefined;
     for (test_targets) |target| {
-        while (child) |c| : (child = try iterator.next()) {
+        while (child) |c| : (child = try iterator.next(io)) {
             const path = try std.fmt.bufPrint(&buffer, "{s}{s}", .{ samples_dir, c.name });
             const sample = b.addTest(.{
                 .root_module = b.createModule(.{

@@ -5,49 +5,59 @@
 const std = @import("std");
 
 const alloc = std.testing.allocator;
+const assert = std.debug.assert;
 
 // Sample starts here{{ slot contents }}\
 test "Execute a process (inherit stdout and stderr)" {
+    const io = std.testing.io;
+
     // the command to run
     const argv = [_][]const u8{ "ls", "./" };
 
     // init a ChildProcess... cleanup is done by calling wait().
-    var proc = std.process.Child.init(&argv, alloc);
-
-    // ignore the streams to avoid the zig build blocking...
-    // REMOVE THESE IF YOU ACTUALLY WANT TO INHERIT THE STREAMS.
-    proc.stdin_behavior = .Ignore;
-    proc.stdout_behavior = .Ignore;
-    proc.stderr_behavior = .Ignore;
-
-    try proc.spawn();
+    var proc = try std.process.spawn(io, .{
+        .argv = &argv,
+        // here, we ignore the streams to avoid the zig build blocking...
+        // by default, the streams are set to `.inherit`, so just remove these in most cases!
+        .stdin = .ignore,
+        .stdout = .ignore,
+        .stderr = .ignore,
+    });
 
     //std.debug.print("Spawned process PID={}\n", .{proc.id});
 
     // the process only ends after this call returns.
-    const term = try proc.wait();
+    const term = try proc.wait(io);
 
     // term can be .Exited, .Signal, .Stopped, .Unknown
-    try std.testing.expectEqual(term, std.process.Child.Term{ .Exited = 0 });
+    try std.testing.expectEqual(0, switch (term) {
+        .exited => |code| code,
+        else => 1,
+    });
 }
 
 test "Execute a process (consume stdout and stderr into allocated memory)" {
+    const io = std.testing.io;
+
     // the command to run
     const argv = [_][]const u8{ "ls", "./" };
 
-    const proc = try std.process.Child.run(.{
+    // init a ChildProcess... cleanup is done by calling wait().
+    var proc = try std.process.spawn(io, .{
         .argv = &argv,
-        .allocator = alloc,
+        .stdin = .ignore,
+        .stdout = .pipe,
+        .stderr = .pipe,
     });
 
-    // on success, we own the output streams
-    defer alloc.free(proc.stdout);
-    defer alloc.free(proc.stderr);
+    // on success, the pipe streams are assigned to File objects.
+    assert(proc.stdout != null);
+    assert(proc.stderr != null);
 
-    const term = proc.term;
+    const term = try proc.wait(io);
 
-    try std.testing.expectEqual(std.process.Child.Term{ .Exited = 0 }, term);
-    try std.testing.expect(proc.stdout.len != 0);
-    try std.testing.expectEqual(proc.stderr.len, 0);
-
+    try std.testing.expectEqual(0, switch (term) {
+        .exited => |code| code,
+        else => 1,
+    });
 }

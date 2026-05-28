@@ -2,7 +2,7 @@
 const std = @import("std");
 
 // Sample starts heretest "List contents of directory" {
-    var children = std.fs.cwd().openDir("source", .{}) catch {
+    var children = std.Io.Dir.cwd().openDir("source", .{}) catch {
         // couldn't open dir
         return;
     };

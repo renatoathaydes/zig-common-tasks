@@ -10,8 +10,9 @@ test "Get the test allocator" {
     _ = alloc; // use allocator
 }
 
-test "Create a general-purpose allocator" {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+test "Create a general-purpose/debug allocator" {
+    // notice: GeneralPurposeAllocator was renamed DebugAllocator in Zig 0.16.0
+    var gpa = std.heap.DebugAllocator(.{}){};
     // call deinit to free it if necessary
     defer _ = gpa.deinit();
     _ = gpa.allocator(); // use allocator
@@ -38,4 +39,3 @@ test "Get an Arena allocator" {
     // when it is de-initialized.
     defer alloc.deinit();
 }
-

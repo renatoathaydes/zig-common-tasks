@@ -9,16 +9,18 @@ const http = std.http;
 const alloc = std.testing.allocator;
 
 fn server_starter() !void {
-    const server_address = try std.net.Address.resolveIp("127.0.0.1", 8080);
-    var server = try server_address.listen(.{ .reuse_address = true });
+    const io = std.testing.io;
+
+    const server_address = try std.Io.net.IpAddress.parse("127.0.0.1", 8080);
+    var server = try server_address.listen(io, .{ .reuse_address = true });
 
     // This would normally be an infinite loop!
     // But for testing, we only handle a single request and stop.
-    const client_con = server.accept() catch |err| {
+    const client_con = server.accept(io) catch |err| {
         std.log.err("Unable to accept client connection: {s}", .{@errorName(err)});
         return;
     };
-    handle_connection(client_con) catch |err| {
+    handle_connection(io, client_con) catch |err| {
         std.log.err("Failed to handle request: {s}", .{@errorName(err)});
         return;
     };
@@ -26,15 +28,15 @@ fn server_starter() !void {
 
 /// Handles connection by always responding with a hardcoded response (ok for GET, method_not_allowed otherwise).
 /// Normally you would inspect the request and spawn a new Thread (or use async, coming soon to Zig!).
-fn handle_connection(client_con: std.net.Server.Connection) !void {
-    defer client_con.stream.close();
+fn handle_connection(io: std.Io, client_con: std.Io.net.Stream) !void {
+    defer client_con.close(io);
     const read_buffer = try alloc.alloc(u8, 8 * 1024);
     defer alloc.free(read_buffer);
     const write_buffer = try alloc.alloc(u8, 8 * 1024);
     defer alloc.free(write_buffer);
-    var con_reader = client_con.stream.reader(read_buffer);
-    var con_writer = client_con.stream.writer(write_buffer);
-    var server = http.Server.init(con_reader.interface(), &con_writer.interface);
+    var con_reader = client_con.reader(io, read_buffer);
+    var con_writer = client_con.writer(io, write_buffer);
+    var server = http.Server.init(&con_reader.interface, &con_writer.interface);
     var req = try server.receiveHead();
     if (req.head.method == .GET) {
         try req.respond("Hello\n", .{ .extra_headers = &.{.{ .name = "Content-Type", .value = "text/plain" }} });
@@ -44,12 +46,14 @@ fn handle_connection(client_con: std.net.Server.Connection) !void {
 }
 
 test "HTTP Server and HTTP Client" {
+    const io = std.testing.io;
+
     // The Server needs to run on a separate Thread.
     const server_thread = try std.Thread.spawn(.{ .allocator = alloc }, server_starter, .{});
     defer server_thread.join();
 
     // Create a HTTP client that will send a single request to the Server.
-    var client = http.Client{ .allocator = alloc };
+    var client = http.Client{ .allocator = alloc, .io = io };
     defer client.deinit();
 
     const uri = try std.Uri.parse("http://localhost:8080/hello");
