@@ -87,6 +87,8 @@ in the top-right corner of this page.</p>
 
 <p><a href="#get-env-vars">Get environment variables</a></p>
 
+<p><a href="#io">IO and Future</a></p>
+
 <p><a href="#list-dirs">List directory contents</a></p>
 
 <p><a href="#print-something">Print something to stdout/stderr</a></p>
@@ -173,8 +175,8 @@ in the top-right corner of this page.</p>
 <p><span id='c-interop-strings'>
 <a href="/zig-common-tasks/samples/c_string.zig">C Strings</a>
 </span></p>
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#75715e">// WARNING: @cImport will eventually go away.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">//          https://github.com/ziglang/zig/issues/20630
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#75715e">// WARNING: @cImport is deprecated since Zig 0.16.0!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">// See https://ziglang.org/download/0.16.0/release-notes.html#cImport-Moving-to-Build-System
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> c <span style="color:#f92672">=</span> @cImport({
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// normally you would include headers or even c files, like this:
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">//@cInclude(&#34;test.c&#34;);
@@ -437,6 +439,40 @@ in the top-right corner of this page.</p>
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span></code></pre>
+<hr>
+
+<p><span id='io'>
+<a href="/zig-common-tasks/samples/io.zig">IO and Future</a>
+</span></p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#75715e">// IO can be obtained from the Init struct, which Zig
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">// can provide as an argument to the main function,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">// or, for testing, from `std.testing.io`.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">// See https://ziglang.org/download/0.16.0/release-notes.html#Juicy-Main
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> main(init<span style="color:#f92672">:</span> std.process.Init) <span style="color:#f92672">!</span><span style="color:#66d9ef">void</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// An appropriate default Io implementation based on the target configuration.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Debug mode will set up leak checking if possible.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> io <span style="color:#f92672">=</span> init.io;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// IO is not normally used directly, but passed around to functions that use IO
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> result<span style="color:#f92672">:</span> <span style="color:#66d9ef">u32</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">undefined</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> future <span style="color:#f92672">=</span>  io.<span style="color:#66d9ef">async</span>(go, .{<span style="color:#ae81ff">41</span>, <span style="color:#f92672">&amp;</span>result});
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> future.<span style="color:#66d9ef">cancel</span>(io);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Use this pattern to avoid resource leaks and handle Cancelation gracefully:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// defer if (future.cancel(io)) |resource| resource.deinit() else |_| {};
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// await the future.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    future.<span style="color:#66d9ef">await</span>(io);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// now, result has been set.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    std.debug.print(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Got {d}</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>, .{result});
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> go(n<span style="color:#f92672">:</span> <span style="color:#66d9ef">u32</span>, result<span style="color:#f92672">:</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">u32</span>) <span style="color:#66d9ef">void</span> {
+</span></span><span style="display:flex;"><span>    result.<span style="color:#f92672">*</span> <span style="color:#f92672">=</span> n <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>} <span style="color:#75715e">//
+</span></span></span></code></pre>
 <hr>
 
 <p><span id='parse-json'>
@@ -1004,8 +1040,8 @@ in the top-right corner of this page.</p>
 </span></span><span style="display:flex;"><span>    <span style="color:#e6db74">\\const void* get_void() { return _value; }</span>
 </span></span><span style="display:flex;"><span>;
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// WARNING: @cImport will eventually go away.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">//          https://github.com/ziglang/zig/issues/20630
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// WARNING: @cImport is deprecated since Zig 0.16.0!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">// See https://ziglang.org/download/0.16.0/release-notes.html#cImport-Moving-to-Build-System
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> c <span style="color:#f92672">=</span> @cImport({
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// normally you would include headers or even c files, like this:
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">//@cInclude(&#34;test.c&#34;);
