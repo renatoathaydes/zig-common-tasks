@@ -16,4 +16,3 @@ pub fn main() !void {
         // use input
     }
 } // {{ end }}{{ eval contents }} Sample ends
-

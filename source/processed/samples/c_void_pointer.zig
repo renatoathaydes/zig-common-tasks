@@ -31,8 +31,7 @@ test "deal with void pointer from C" {
     const untyped_value: ?*const anyopaque = c.get_void();
 
     // to restore the type, we must cast it to the known type explicitly
-    const value: *const u32 = @ptrCast(@alignCast( untyped_value));
-    
+    const value: *const u32 = @ptrCast(@alignCast(untyped_value));
+
     try std.testing.expectEqual(@as(u32, 10), value.*);
 }
-

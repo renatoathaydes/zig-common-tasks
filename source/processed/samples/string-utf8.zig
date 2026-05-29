@@ -13,4 +13,3 @@ test "Iterate over utf-8 string code points" {
     try std.testing.expectEqual(@as(?u21, 0x1F680), utf8_str.nextCodepoint());
     try std.testing.expectEqual(@as(?u21, null), utf8_str.nextCodepoint());
 } // {{ end }}{{ eval contents }} Sample ends
-

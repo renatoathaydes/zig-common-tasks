@@ -18,4 +18,3 @@ test "Convert string to number" {
     const byte = try std.fmt.parseUnsigned(u8, "1_0101", 2);
     try std.testing.expectEqual(@as(u8, 21), byte);
 } // {{ end }}{{ eval contents }} Sample ends
-

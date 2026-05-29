@@ -32,4 +32,3 @@ test "Handling C strings" {
     try expect(!std.mem.eql(u8, span(cstr), hzSlice));
     try expect(std.mem.eql(u8, span(cstr), span(hc)));
 }
-

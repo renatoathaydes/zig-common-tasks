@@ -11,10 +11,7 @@ test "Parse JSON object" {
     const example_json: []const u8 =
         \\{"a_number": 10, "a_str": "hello"}
     ;
-    const JsonStruct = struct {
-        a_number: u32,
-        a_str: []const u8
-    };
+    const JsonStruct = struct { a_number: u32, a_str: []const u8 };
 
     const parsed = try std.json.parseFromSlice(JsonStruct, alloc, example_json, .{});
     defer parsed.deinit();
