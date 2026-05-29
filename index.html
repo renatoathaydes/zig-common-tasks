@@ -265,26 +265,54 @@ in the top-right corner of this page.</p>
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Get an Arena allocator</span><span style="color:#e6db74">&#34;</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> alloc <span style="color:#f92672">=</span> std.heap.ArenaAllocator.init(std.heap.page_allocator);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// ArenaAllocator is Thread-safe and Lock-free since Zig 0.16.0!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> alloc <span style="color:#f92672">=</span> std.heap.ArenaAllocator.init(std.heap.page_allocator);
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// the arena allocator will free everything allocated through it
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// when it is de-initialized.
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">defer</span> alloc.deinit();
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span></code></pre>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// An allocator can also be obtained from the Init struct, which Zig
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">// can provide as an argument to the main function.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">// See https://ziglang.org/download/0.16.0/release-notes.html#Juicy-Main
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> main(init<span style="color:#f92672">:</span> std.process.Init) <span style="color:#f92672">!</span><span style="color:#66d9ef">void</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// ArenaAllocator:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Permanent storage for the entire process, cleaned automatically on
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// exit. Threadsafe.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> arena <span style="color:#f92672">=</span> init.arena.allocator();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// this will be freed automatically with the arena!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> array <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> arena.alloc([<span style="color:#ae81ff">16</span>]<span style="color:#66d9ef">u8</span>, <span style="color:#ae81ff">10</span>);
+</span></span><span style="display:flex;"><span>    _ <span style="color:#f92672">=</span> array;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// A default-selected general purpose allocator for temporary heap
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// allocations. Debug mode will set up leak checking if possible.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Threadsafe.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> temp_alloc <span style="color:#f92672">=</span> init.gpa;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// this must be manually freed!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> temp_array <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> temp_alloc.alloc([<span style="color:#ae81ff">16</span>]<span style="color:#66d9ef">u8</span>, <span style="color:#ae81ff">10</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> temp_alloc.free(temp_array);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// no need to de-init the allocator coming from Init!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>} <span style="color:#75715e">//
+</span></span></span></code></pre>
 <hr>
 
 <p><span id='get-command-line-args'>
 <a href="/zig-common-tasks/samples/get-args.zig">Get command line arguments</a>
 </span></p>
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">argsWithAllocator - get an iterator, use an allocator</span><span style="color:#e6db74">&#34;</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// this seems to be the only portable way to do it.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> a<span style="color:#f92672">:</span> std.process.Args <span style="color:#f92672">=</span> <span style="color:#66d9ef">undefined</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> args <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.process.Args.Iterator.initAllocator(a, alloc);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> args.deinit();
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> (args.next()) <span style="color:#f92672">|</span>arg<span style="color:#f92672">|</span> {
-</span></span><span style="display:flex;"><span>        _ <span style="color:#f92672">=</span> arg; <span style="color:#75715e">// use arg
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    }
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#75715e">// Program arguments can be obtained from the Init.Minimal struct, which Zig
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">// can provide as an argument to the main function.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">// See https://ziglang.org/download/0.16.0/release-notes.html#Juicy-Main
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> main(init<span style="color:#f92672">:</span> std.process.Init) <span style="color:#f92672">!</span><span style="color:#66d9ef">void</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> min <span style="color:#f92672">=</span> init.minimal;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> alloc <span style="color:#f92672">=</span> init.arena.allocator();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> args <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> min.args.toSlice(alloc);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (args, <span style="color:#ae81ff">0</span>..) <span style="color:#f92672">|</span>arg, i<span style="color:#f92672">|</span> {
+</span></span><span style="display:flex;"><span>        std.log.info(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">arg[{d}] = {s}</span><span style="color:#e6db74">&#34;</span>, .{ i, arg });
+</span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>} <span style="color:#75715e">//
 </span></span></span></code></pre>
 <p>Notes:
@@ -297,20 +325,15 @@ in the top-right corner of this page.</p>
 <p><span id='get-env-vars'>
 <a href="/zig-common-tasks/samples/get-system-envs.zig">Get environment variables</a>
 </span></p>
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Get a single environment variable</span><span style="color:#e6db74">&#34;</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// the only other way to get this is from std.process.Init
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> environ <span style="color:#f92672">=</span> std.testing.environ;
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> path <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> environ.getAlloc(alloc, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">PATH</span><span style="color:#e6db74">&#34;</span>);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> alloc.free(path);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expect(path.len <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>);
-</span></span><span style="display:flex;"><span>}
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;"><code><span style="display:flex;"><span><span style="color:#75715e">// Environment variables can be obtained from the Init.Minimal struct, which Zig
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">// can provide as an argument to the main function.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">// See https://ziglang.org/download/0.16.0/release-notes.html#Juicy-Main
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> main(init<span style="color:#f92672">:</span> std.process.Init) <span style="color:#f92672">!</span><span style="color:#66d9ef">void</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> env<span style="color:#f92672">:</span> <span style="color:#f92672">*</span>std.process.Environ.Map <span style="color:#f92672">=</span> init.environ_map;
+</span></span><span style="display:flex;"><span>    std.log.info(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Number of env vars: {d}</span><span style="color:#e6db74">&#34;</span>, .{env.count()});
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">test</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Get all environment variables</span><span style="color:#e6db74">&#34;</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// the only other way to get this is from std.process.Init
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> environ <span style="color:#f92672">=</span> std.testing.environ;
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> env <span style="color:#f92672">=</span> <span style="color:#66d9ef">try</span> std.process.Environ.createMap(environ, alloc);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> env.deinit();
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> std.testing.expect(env.count() <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> path <span style="color:#f92672">=</span> env.get(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">PATH</span><span style="color:#e6db74">&#34;</span>) <span style="color:#66d9ef">orelse</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&#34;</span>;
+</span></span><span style="display:flex;"><span>    std.log.info(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">PATH={s}</span><span style="color:#e6db74">&#34;</span>, .{path});
 </span></span><span style="display:flex;"><span>} <span style="color:#75715e">//
 </span></span></span></code></pre>
 <hr>

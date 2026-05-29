@@ -4,14 +4,15 @@
 // Get command line arguments
 const std = @import("std");
 
-const alloc = std.testing.allocator;
+// Sample starts here// Program arguments can be obtained from the Init.Minimal struct, which Zig
+// can provide as an argument to the main function.
+// See https://ziglang.org/download/0.16.0/release-notes.html#Juicy-Main
+pub fn main(init: std.process.Init) !void {
+    const min = init.minimal;
+    const alloc = init.arena.allocator();
 
-// Sample starts heretest "argsWithAllocator - get an iterator, use an allocator" {
-    // this seems to be the only portable way to do it.
-    const a: std.process.Args = undefined;
-    var args = try std.process.Args.Iterator.initAllocator(a, alloc);
-    defer args.deinit();
-    while (args.next()) |arg| {
-        _ = arg; // use arg
+    const args = try min.args.toSlice(alloc);
+    for (args, 0..) |arg, i| {
+        std.log.info("arg[{d}] = {s}", .{ i, arg });
     }
 } // Sample ends 
