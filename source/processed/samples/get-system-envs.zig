@@ -4,21 +4,14 @@
 // {{ eval name }}
 const std = @import("std");
 
-const alloc = std.testing.allocator;
-
 // Sample starts here{{ slot contents }}\
-test "Get a single environment variable" {
-    // the only other way to get this is from std.process.Init
-    const environ = std.testing.environ;
-    const path = try environ.getAlloc(alloc, "PATH");
-    defer alloc.free(path);
-    try std.testing.expect(path.len > 0);
-}
+// Environment variables can be obtained from the Init.Minimal struct, which Zig
+// can provide as an argument to the main function.
+// See https://ziglang.org/download/0.16.0/release-notes.html#Juicy-Main
+pub fn main(init: std.process.Init) !void {
+    const env: *std.process.Environ.Map = init.environ_map;
+    std.log.info("Number of env vars: {d}", .{env.count()});
 
-test "Get all environment variables" {
-    // the only other way to get this is from std.process.Init
-    const environ = std.testing.environ;
-    var env = try std.process.Environ.createMap(environ, alloc);
-    defer env.deinit();
-    try std.testing.expect(env.count() > 0);
+    const path = env.get("PATH") orelse "";
+    std.log.info("PATH={s}", .{path});
 } //{{ end }}{{ eval contents }} Sample ends
