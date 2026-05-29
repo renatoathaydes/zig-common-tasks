@@ -7,8 +7,8 @@ const alloc = std.testing.allocator;
 const expect = std.testing.expect;
 
 // Sample starts here{{ slot contents }}\
-// WARNING: @cImport will eventually go away.
-//          https://github.com/ziglang/zig/issues/20630
+// WARNING: @cImport is deprecated since Zig 0.16.0!
+// See https://ziglang.org/download/0.16.0/release-notes.html#cImport-Moving-to-Build-System
 const c = @cImport({
     // normally you would include headers or even c files, like this:
     //@cInclude("test.c");
